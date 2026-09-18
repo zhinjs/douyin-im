@@ -1,0 +1,3007 @@
+// Generated from Douyin Chat 1.2.1 native descriptors and Frontier renderer codec.
+// Protocol schema only; presence here does not expose an SDK capability.
+syntax = "proto2";
+package im_proto;
+
+option java_package = "com.bytedance.im.core.proto";
+option java_outer_classname = "IMAPI";
+option objc_class_prefix = "TIMPBN";
+
+// ---- frame.proto ----
+
+message Frame {
+  message ExtendedEntry {
+    required string key = 1;
+    required string value = 2;
+  }
+
+  required uint64 seqid = 1;
+  required uint64 logid = 2;
+  required int32 service = 3;
+  required int32 method = 4;
+  repeated ExtendedEntry headers = 5;
+  optional string payload_encoding = 6;
+  optional string payload_type = 7;
+  optional bytes payload = 8;
+  optional string log_id_new = 9;
+  optional string server_timing = 10;
+  optional string msg_id = 11;
+  optional int32 frame_type = 12;
+}
+
+// ---- im_api.proto ----
+
+enum IMCMD {
+  IMCMD_NOT_USED = 0;
+  SEND_MESSAGE = 100;
+  GET_MESSAGES_BY_USER = 200;
+  GET_MESSAGES_BY_USER_INIT = 201;
+  REPORT_GET_MESSAGES_CURSOR = 202;
+  GET_MESSAGES_BY_USER_INIT_V2 = 203;
+  CHECK_MESSAGES_BY_USER = 210;
+  GET_MESSAGE_INFO_BY_SERVER_ID = 211;
+  GET_CONVERSATION_LIST = 300;
+  GET_MESSAGES_BY_CONVERSATION = 301;
+  GET_MESSAGES_CHECKINFO_IN_CONVERSATION = 302;
+  SEND_ONLINE = 400;
+  SEND_OFFLINE = 401;
+  SEND_CLIENT_FOREGROUND = 402;
+  SEND_CLIENT_BACKGROUND = 403;
+  SEND_USER_ACTION = 410;
+  SEND_INPUT_STATUS = 411;
+  NEW_MSG_NOTIFY = 500;
+  MARK_READ_NOTIFY = 501;
+  CONVERSATION_INFO_UPDATED_NOTIFY = 502;
+  NEW_P2P_MSG_NOTIFY = 504;
+  NEW_BROADCAST_MSG_NOTIFY = 505;
+  NEW_BROADCAST_CMD_MSG_NOTIFY = 506;
+  NEW_PREVIEW_MSG_NOTIFY = 507;
+  NEW_FRIEND_MSG_NOTIFY = 508;
+  GET_CONVERSATION_INFO = 600;
+  SET_CONVERSATION_INFO = 601;
+  CREATE_CONVERSATION = 602;
+  MARK_CONVERSATION_DELETE = 603;
+  MARK_CONVERSATION_READ = 604;
+  GET_CONVERSATION_INFO_LIST = 607;
+  GET_CONVERSATION_INFO_V2 = 608;
+  CREATE_CONVERSATION_V2 = 609;
+  GET_CONVERSATION_INFO_LIST_V2 = 610;
+  GET_CONVERSATION_INFO_LIST_BY_FAVORITE_V2 = 611;
+  GET_CONVERSATION_INFO_LIST_BY_TOP_V2 = 612;
+  BATCH_MARK_CONVERSATION_READ = 613;
+  DISSOLVE_CONVERSATION = 614;
+  GET_CONVERSATIONS_CHECKINFO = 615;
+  CONVERSATION_PARTICIPANTS_LIST = 605;
+  ADD_CONVERSATION_PARTICIPANTS = 650;
+  REMOVE_CONVERSATION_PARTICIPANTS = 651;
+  LEAVE_CONVERSATION = 652;
+  CONVERSATION_SET_ROLE = 653;
+  MGET_CONVERSATION_PARTICIPANTS = 654;
+  UPDATE_CONVERSATION_PARTICIPANT = 655;
+  BATCH_UPDATE_CONVERSATION_PARTICIPANT = 656;
+  DELETE_MESSAGE = 701;
+  RECALL_MESSAGE = 702;
+  REACTION_MESSAGE = 703;
+  SYNC_MESSAGE = 704;
+  SET_MESSAGE_PROPERTY = 705;
+  GET_GROUP_INFO = 801;
+  SET_GROUP_INFO = 802;
+  GET_GROUP_INFO_LIST = 803;
+  GET_CONVERSATION_CORE_INFO = 901;
+  SET_CONVERSATION_CORE_INFO = 902;
+  GET_CONVERSATION_CORE_INFO_LIST = 903;
+  UPSERT_CONVERSATION_CORE_EXT_INFO = 904;
+  GET_CONVERSATION_SETTING_INFO = 920;
+  SET_CONVERSATION_SETTING_INFO = 921;
+  UPSERT_CONVERSATION_SETTING_EXT_INFO = 922;
+  GET_STRANGER_CONVERSATION_LIST = 1001;
+  GET_STRANGER_MESSAGES_IN_CONVERSATION = 1002;
+  DELETE_STRANGER_MESSAGE = 1003;
+  DELETE_STRANGER_CONVERSATION = 1004;
+  DELETE_ALL_STRANGER_CONVERSATIONS = 1005;
+  MARK_STRANGER_CONVERSATION_READ = 1006;
+  MARK_ALL_STRANGER_CONVERSATIONS_READ = 1007;
+  GET_STRANGER_UNREAD_COUNT = 1008;
+  STRANGER_NEW_MSG_NOTIFY = 1099;
+  GET_CONVERSATION_PARTICIPANTS_READ_INDEX_V3 = 2000;
+  GET_CONVERSATION_PARTICIPANTS_MIN_INDEX_V3 = 2001;
+  MARK_CONVERSATION_READ_V3 = 2002;
+  GET_MEDIA_UPLOAD_TOKEN = 2003;
+  GET_MEDIA_URLS = 2004;
+  GET_TICKET = 2005;
+  GET_USER_CONVERSATION_LIST = 2006;
+  BROADCAST_SEND_MESSAGE = 2007;
+  BROADCAST_RECV_MESSAGE = 2008;
+  BROADCAST_USER_COUNTER = 2009;
+  CLIENT_ACK = 2010;
+  CREATE_VOIP = 2011;
+  CALL_VOIP = 2012;
+  UPDATE_VOIP = 2013;
+  HEARTBEAT_CHANNEL = 2014;
+  PROFILE_GET_INFO = 2015;
+  REPORT_CLIENT_METRICS = 2016;
+  GET_CONFIGS = 2017;
+  UNREAD_COUNT_REPORT = 2018;
+  BLOCK_MEMBERS = 2019;
+  BLOCK_CONVERSATION = 2020;
+  MODIFY_MESSAGE_EXT = 2021;
+  GET_CONVERSATION_AUDIT_SWITCH = 2022;
+  UPDATE_CONVERSATION_AUDIT_SWITCH = 2023;
+  SEND_CONVERSATION_APPLY = 2024;
+  ACK_CONVERSATION_APPLY = 2025;
+  GET_CONVERSATION_APPLY = 2026;
+  GET_CONVERSATION_AUDIT_LIST = 2027;
+  GET_CONVERSATION_AUDIT_UNREAD = 2028;
+  CLEAR_CONVERSATION_AUDIT_UNREAD = 2029;
+  GET_UNREAD_COUNT = 2030;
+  SEND_MESSAGE_P2P = 2031;
+  GET_BLOCKLIST = 2032;
+  SET_BLOCKLIST = 2033;
+  CHECK_IN_BLOCKLIST = 2034;
+  GET_MESSAGE_INFO_BY_INDEX_V2 = 2035;
+  MARK_MESSAGE = 2036;
+  PULL_MARK_MESSAGE = 2037;
+  BATCH_GAT_CONVERSATION_PARTICIPANTS_READINDEX = 2038;
+  GET_RECENT_MESSAGE = 2039;
+  GET_CMD_MESSAGE = 2040;
+  GET_MESSAGE_INFO_BY_INDEX_V2_RANGE = 2041;
+  BATCH_GET_CONVERSATION_AUDIT_UNREAD = 2042;
+  GET_MESSAGE_BY_INIT = 2043;
+  GET_USER_MESSAGE = 2048;
+  PREVIEWER_GET_MESSAGES_BY_CONVERSATION = 2044;
+  PREVIEWER_GET_CONVERSATION_INFO_LIST = 2045;
+  GET_RECENT_STRANGER_MESSAGE = 2047;
+  GET_CONVERSATIONS_CHECKINFO_V2 = 2046;
+  GET_FRIEND_APPLY_LIST = 20471;
+  GET_FRIEND_RECEIVE_APPLY_LIST = 20481;
+  REPLY_FRIEND_APPLY = 2049;
+  GET_FRIEND_LIST = 2050;
+  DELETE_FRIEND = 2051;
+  PROFILE_BATCH_GET_INFO = 2052;
+  PROFILE_SEARCH_INFO = 2053;
+  MARK_MSG_UNREAD_COUNT_REPORT = 2054;
+  MARK_MSG_GET_UNREAD_COUNT = 2055;
+  BATCH_UNMARK_MESSAGE = 2056;
+  CLIENT_BATCH_ACK = 2057;
+  JOIN_VOIP = 2058;
+  GLOBAL_MESSAGE_SEARCH = 2100;
+  GLOBAL_GROUP_SEARCH = 2101;
+  CONVERSATION_MESSAGE_SEARCH = 2102;
+  CONVERSATION_MESSAGE_PRE_VIEW = 2103;
+  VCD_CLEAN = 9999;
+}
+
+enum StatusCode {
+  OK = 0;
+  INVALID_TOKEN = 1;
+  EXPIRED_TOKEN = 100;
+  INVALID_TICKET = 2;
+  CONVERSATION_NOT_FOUND = 3;
+  INVALID_REQUEST = 4;
+  INVALID_CMD = 5;
+  SERVER_ERR = 6;
+  USER_FORBIDDEN = 11;
+  DEVICE_NOT_BIND = 7;
+  MESSAGE_ILLEGAL = 8;
+  USER_ILLEGAL = 9;
+  USER_NOT_FRIENDS = 10;
+  USER_SILENCE = 12;
+  USER_NOT_IN_GROUP = 13;
+  USER_BANNED_TO_POST = 14;
+  INTERNAL_ERROR = 500;
+  MESSAGE_TARGET_CONVERSATION_NOT_EXIST = 15;
+  DEGRADATION_ERROR = 16;
+  RECALL_TIMEOUT = 17;
+  TOUCH_LIMIT = 18;
+  CALLBACK_DENY = 19;
+}
+
+enum VoipStatusCode {
+  SUCCESS = 0;
+  VOIP_PARAMS_ERROR = 4;
+  VOIP_STATUS_ERROR = 18;
+  VOIP_CANCEL_ERROR = 19;
+  VOIP_OTHER_RESPONSE_ERROR = 20;
+  VOIP_CALLBACK_ERROR = 21;
+}
+
+enum SendMessageStatus {
+  SEND_SUCCEED = 0;
+  USER_NOT_IN_CONVERSATION = 1;
+  CHECK_CONV_NOT_PASS = 2;
+  CHECK_MSG_NOT_PASS = 3;
+  CHECK_MSG_NOT_PASS_BUT_SELF_VISIBLE = 4;
+  USER_HAS_BEEN_BLOCKED = 5;
+}
+
+enum ConversationOperationStatus {
+  OP_SUCCEED = 0;
+  REJECTED = 1;
+  PARTLY_REJECTED = 2;
+  APPLY_REJECTED = 3;
+  APPLY_SUCCEED = 4;
+  TOUCH_LIMITS = 5;
+}
+
+enum Refer {
+  REFER_NOT_USED = 0;
+  ANDROID = 1;
+  IOS = 2;
+  PC = 3;
+  SERVER = 4;
+}
+
+enum ConversationType {
+  ONE_TO_ONE_CHAT = 1;
+  GROUP_CHAT = 2;
+  LIVE_CHAT = 3;
+  BROADCAST_CHAT = 4;
+}
+
+enum BlockType {
+  MEMBER = 1;
+  CONVERSATION_NOT_MANAGERS = 2;
+  CONVERSATION_ALL = 3;
+}
+
+enum MessageType {
+  MESSAGE_TYPE_NOT_USED = 0;
+  LEGACY_MESSAGE_TYPE_SYSTEM = 1;
+  LEGACY_MESSAGE_TYPE_IMAGE = 2;
+  LEGACY_MESSAGE_TYPE_AUDIO = 3;
+  LEGACY_MESSAGE_TYPE_VIDEO = 4;
+  LEGACY_MESSAGE_TYPE_EMOJI = 5;
+  LEGACY_MESSAGE_TYPE_FILE = 6;
+  LEGACY_MESSAGE_TYPE_TEXT = 7;
+  LEGACY_MESSAGE_TYPE_USER_CARD = 8;
+  LEGACY_MESSAGE_TYPE_TOAST = 9;
+  LEGACY_MESSAGE_TYPE_GROUP_CARD = 10;
+  MESSAGE_TYPE_TEXT = 10001;
+  MESSAGE_TYPE_STICKER = 10002;
+  MESSAGE_TYPE_IMAGE = 10003;
+  MESSAGE_TYPE_VIDEO = 10004;
+  MESSAGE_TYPE_FILE = 10005;
+  MESSAGE_TYPE_AUDIO = 10006;
+  MESSAGE_TYPE_LOCATION = 10007;
+  MESSAGE_TYPE_SYSTEM = 10008;
+  MESSAGE_TYPE_LINK = 10009;
+  MESSAGE_TYPE_GSDK_AUDIO = 10011;
+  MESSAGE_TYPE_RECALL_MSG_COMMAND = 40001;
+  MESSAGE_TYPE_COMMAND = 50001;
+  MESSAGE_TYPE_UPDATE_MESSAGE_EXT = 50002;
+  MESSAGE_TYPE_MODE_CHANGE = 50010;
+  MESSAGE_TYPE_UPDATE_MIN_INDEX = 50003;
+  MESSAGE_TYPE_USER_ACTION = 50004;
+  MESSAGE_TYPE_CONVERSATION_DESTROY = 50005;
+  MESSAGE_TYPE_BLOCK_COMMAND = 50011;
+  MESSAGE_TYPE_MARK_COMMAND = 50012;
+  MESSAGE_TYPE_READ_COMMAND = 50013;
+  MESSAGE_TYPE_SEND_FAILED_RESP = 50014;
+  MESSAGE_TYPE_NOTIFY_STRANGER = 50015;
+  MESSAGE_TYPE_BATCH_UNMARK_COMMAND = 50016;
+  MESSAGE_TYPE_VISIBLE_MESSAGE_COMMAND = 50017;
+  MESSAGE_TYPE_NOTIFY_COMMAND = 60001;
+  MESSAGE_TYPE_MESSAGE_PROPERTY = 70001;
+  MESSAGE_TYPE_UPDATE_MESSAGE_PROPERTY = 70002;
+  MESSAGE_TYPE_VOIP_COMMAND = 80001;
+  MESSAGE_TYPE_VOIP_CARD_COMMAND = 80002;
+  MESSAGE_TYPE_VOIP_SINGLE_CHAT_STATUS_COMMAND = 80003;
+  MESSAGE_TYPE_VOIP_CALLEE_LIST_UPDATE_NOTIFY = 80004;
+  MESSAGE_TYPE_VOIP_ROOM_DISMISS_NOTIFY = 80005;
+  MESSAGE_TYPE_CONVERSATION_APPLY_NOTIFY = 90001;
+  MESSAGE_TYPE_CONVERSATION_AUDIT_ACK_NOTIFY = 90002;
+}
+
+enum GroupRole {
+  ORDINARY = 0;
+  OWNER = 1;
+  MANAGER = 2;
+  VISITOR = 3;
+  SYSTEM = 4;
+}
+
+enum GroupAuth {
+  UPDATE_GROUP_NAME = 0;
+  RECALL_ORDINARY_MESSAGE = 1;
+  RECALL_MANAGER_MESSAGE = 2;
+  ADD_PARTICIPANT = 3;
+  REMOVE_PARTICIPANT = 4;
+  SET_MANAGER = 5;
+  DISSOLVE_GROUP = 6;
+  PUBLISH_NOTICE = 7;
+  BLOCKS_ORDINARY = 8;
+  BLOCKS_MANAGER = 9;
+  BLOCKS_CONVERSATION = 10;
+  UPDATE_GROUP_AUDIT = 11;
+  ACK_CONVERSATION_AUDIT = 12;
+}
+
+enum TicketType {
+  TICKET_TYPE_APP = 1;
+  TICKET_TYPE_PC = 2;
+  TICKET_TYPE_WEB = 3;
+}
+
+enum ParticipantRole {
+  PARTICIPANT_ROLE_NORMAL = 0;
+  PARTICIPANT_ROLE_OWNER = 1;
+  PARTICIPANT_ROLE_ADMIN = 2;
+  PARTICIPANT_ROLE_VISITOR = 3;
+}
+
+enum BlockSource {
+  BlockType_None = 1;
+  BlockType_Normal = 2;
+  BlockType_Punish = 3;
+}
+
+enum InitType {
+  TYPE_BY_CONVERSATION = 1;
+  TYPE_BY_USER = 2;
+  TYPE_BY_RANK = 3;
+}
+
+enum ConversationsListPolicy {
+  ALL = 1;
+  HOT = 2;
+}
+
+enum MessageDirection {
+  OLDER = 1;
+  NEWER = 2;
+  FROM_LATEST = 3;
+}
+
+enum UserActionType {
+  ENTER_CONVERSATION = 1;
+  EXIT_CONVERSATION = 2;
+}
+
+enum InputStatus {
+  TYPING = 3;
+  CLEAR_INPUT = 4;
+}
+
+enum BlockStatus {
+  UNBLOCK = 0;
+  BLOCK = 1;
+}
+
+enum ActionType {
+  UNKNOWN_ACTION = 0;
+  FAVORITE = 1;
+  PIN = 2;
+  UNREAD = 3;
+}
+
+enum SendType {
+  BY_CONVERSATION = 0;
+  BY_USER = 1;
+}
+
+enum NewMessageNotifyType {
+  PER_USER = 1;
+  PER_CONVERSATION = 2;
+}
+
+enum MsgTraceMetrics {
+  GATEWAY = 0;
+  BEFORE_CALLBACK = 1;
+  AFTER_CALLBACK = 2;
+  BEFORE_CONVERSATION_KAFKA = 3;
+  AFTER_CONVERSATION_KAFKA = 4;
+  BEFORE_USER_KAFKA = 5;
+  AFTER_USER_KAFKA = 6;
+  PUSH = 7;
+}
+
+enum MsgTracePath {
+  FROM_UNKNOWN = 0;
+  FROM_FRONTIER = 1;
+  FROM_HTTP = 2;
+  FROM_SERVER = 3;
+}
+
+enum MuteMessageType {
+  TYPE_MENTION = 1;
+  TYPE_SEND_BY_GROUP_OWNER = 2;
+  TYPE_AUTO_SEND_BY_SERVER = 3;
+  TYPE_MENTION_AND_SEND_BY_GROUP_OWNER = 4;
+}
+
+enum FriendMessageType {
+  SendApply = 1;
+  DeleteFriend = 2;
+  AddFriend = 3;
+}
+
+enum PreviewOperationStatus {
+  PREVIEW_OP_SUCCEED = 0;
+  PREVIEW_OP_PREVIEW_STATUS_NOT_OPEN = 1;
+  PREVIEW_OP_CALLBACK_NOT_PASS = 2;
+  PREVIEW_OP_CONVERSATION_NOT_FOUND = 3;
+}
+
+enum MessagePropertyType {
+  REACTION = 0;
+  SYNC = 1;
+}
+
+enum ReactionStatus {
+  POSITIVE = 0;
+  NEGATIVE = 1;
+}
+
+enum SyncStatus {
+  S_SEND = 0;
+  S_NOTIFY = 1;
+  S_PULL = 2;
+  S_READ = 3;
+  R_CLICK = 4;
+}
+
+enum OPERATION_TYPE {
+  ADD_PROPERTY_ITEM = 0;
+  REMOVE_PROPERTY_ITEM = 1;
+  SET_PROPERTY = 2;
+  DEL_PROPERTY = 3;
+}
+
+enum ModifyMessagePropertyStatus {
+  MODIFY_PROPERTY_SUCCESS = 0;
+  MODIFY_PROPERTY_REPEAT_REQUEST = 1;
+  MODIFY_PROPERTY_INVALID_LENGTH = 2;
+  MODIFY_PROPERTY_INVALID_REQUEST = 3;
+  MODIFY_PROPERTY_CALLBACK_ERROR = 4;
+  MODIFY_PROPERTY_INTERNAL_ERROR = 500;
+}
+
+enum MediaType {
+  IMG = 1;
+  VIDEO = 2;
+  AUDIO = 3;
+  FILE = 4;
+  OTHER = 10;
+}
+
+enum MediaTokenType {
+  VSDK = 1;
+  IMAGEX = 2;
+  VSDK_V5 = 3;
+  IMAGEX_V5 = 4;
+}
+
+enum ReadURLFrom {
+  URL_VSDK = 1;
+  URL_IMAGEX = 2;
+}
+
+enum SortType {
+  JOIN_TIME = 1;
+  CREATED_TIME = 2;
+  GROUP_NAME = 3;
+  ACTIVE_TIME = 4;
+}
+
+enum NetworkType {
+  UNKNOWN = 0;
+  WIFI = 1;
+  MOBILE_2G = 2;
+  MOBILE_3G = 3;
+  MOBILE_4G = 4;
+  MOBILE_5G = 5;
+}
+
+enum MsgReportType {
+  NOT_USE = 0;
+  MSG_RECEIVE_BY_WS = 1;
+  MSG_RECEIVE_BY_USER = 2;
+  MSG_RECEIVE_BY_INIT = 3;
+  MSG_RECEIVE_BY_LOAD_HISTORY = 4;
+  MSG_RECEIVE_BY_LOAD_NEWER = 5;
+  MSG_RECEIVE_BY_CHECK_MSG_V1 = 6;
+  MSG_RECEIVE_BY_CHECK_MSG_V2 = 7;
+  MSG_RECEIVE_BY_STRANGER = 8;
+  MSG_SHOW = 9;
+}
+
+enum VoipStatus {
+  IDLE = 0;
+  CALLING = 1;
+  RINGING = 2;
+  ACCEPTED = 3;
+  ONTHECALL = 4;
+  TERMINATED = 101;
+  OCCUPIED = 102;
+  REFUSED = 103;
+  CANCELLED = 104;
+  UNAVAILABLE = 105;
+  RTCERROR = 106;
+  RTC_ENGINE_MISMATCH = 107;
+}
+
+enum VoipType {
+  VOIP_TYPE_NOT_USED = 0;
+  VOIP_TYPE_ALL = 1;
+  VOIP_TYPE_VIDEOONLY = 2;
+  VOIP_TYPE_AUDIOONLY = 3;
+}
+
+enum VoipMode {
+  VOIP_MODE_DOUBLE = 0;
+  VOIP_MODE_MULTIPLAYER = 1;
+}
+
+enum ChannelStatus {
+  CHANNEL_STATUS_NOT_USED = 0;
+  ONLINE = 1;
+  OFFLINE = 2;
+}
+
+enum ClientMetricType {
+  COUNTER = 0;
+  TIMER = 1;
+}
+
+enum ApplyErrorCode {
+  APPLY_SUCCESS = 0;
+  UPDATE_STATUS_ERR = 1;
+  CALLBACK_NOT_PASS = 2;
+  APPLY_NOT_EXIST = 3;
+  APPLY_PARAMS_ERR = 4;
+  CONV_SWITCH_CLOSED = 5;
+  USER_NO_PERMISSION = 6;
+  USER_ALREADY_IN_GROUP = 7;
+  CALLBACK_NO_NEED_AUDIT = 8;
+  APPLY_CONVERSATION_NOT_FOUND = 9;
+  CONVERSATION_IS_FULL = 10;
+  APPLY_INTERNAL_ERR = 500;
+}
+
+enum ApplyStatusCode {
+  APPLYING = 1;
+  AGREE = 2;
+  DENY = 3;
+  INVALID = 4;
+}
+
+enum MessageStatus {
+  AVAILABLE = 0;
+  NOT_EXIST = 1;
+  INVISIBLE = 2;
+  RECALLED = 3;
+  DELETED = 4;
+}
+
+enum FriendErrorCode {
+  FRIEND_SUCCESS = 0;
+  FRIEND_DUPLICATE_APPLY = 1;
+  FRIEND_SEND_APPLY_LIMIT = 2;
+  FRIEND_RECEIVE_APPLY_LIMIT = 3;
+  FRIEND_ALREADY_FRIEND = 4;
+  FRIEND_INTERNAL_ERR = 500;
+}
+
+enum AuthType {
+  UNKNOWN_AUTH = 0;
+  SESSION_AUTH = 1;
+  TOKEN_AUTH = 2;
+}
+
+enum TokenType {
+  DEFAULT_TOKEN = 0;
+  APP_TOKEN = 1;
+  SERVER_TOKEN = 2;
+}
+
+message PropertyItem {
+  optional int64 uid = 1;
+  optional string sec_uid = 2;
+  optional int64 create_time = 3;
+  optional string idempotent_id = 4;
+  optional string value = 5;
+}
+
+message PropertyItemList {
+  repeated PropertyItem Items = 1;
+}
+
+message MessageBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 server_message_id = 3;
+  optional int64 index_in_conversation = 4;
+  optional int64 conversation_short_id = 5;
+  optional int32 message_type = 6;
+  optional int64 sender = 7;
+  optional string content = 8;
+  map<string, string> ext = 9;
+  optional int64 create_time = 10;
+  optional int64 version = 11;
+  optional int32 status = 12;
+  optional int64 order_in_conversation = 13;
+  optional string sec_sender = 14;
+  map<string, PropertyItemList> property_list = 15;
+  map<string, string> user_profile = 16;
+  optional int64 index_in_conversation_v2 = 17;
+  optional ReferenceInfo reference_info = 18;
+  optional int64 index_in_conversation_v1 = 19;
+}
+
+message ReferenceInfo {
+  required int64 referenced_message_id = 1;
+  required string hint = 2;
+  required int64 ref_message_type = 3;
+  required MessageStatus referenced_message_status = 4;
+  optional int64 root_message_id = 5;
+  optional int64 root_message_conv_index = 6;
+}
+
+message Participant {
+  optional int64 user_id = 1;
+  optional int64 sort_order = 2;
+  optional int32 role = 3;
+  optional string alias = 4;
+  optional string sec_uid = 5;
+  optional BlockStatus blocked = 6;
+  optional int64 left_block_time = 7;
+  map<string, string> ext = 8;
+}
+
+message ParticipantsPage {
+  repeated Participant participants = 1;
+  optional bool has_more = 2;
+  optional int64 cursor = 3;
+}
+
+message ConversationInfo {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional ParticipantsPage first_page_participants = 3;
+  optional int32 participants_count = 4;
+  optional int64 min_index = 5;
+  optional int64 read_index = 6;
+  optional int32 mute = 8;
+  optional int32 stick_on_top = 9;
+  map<string, string> ext = 10;
+  optional string ticket = 11;
+  optional int64 conversation_short_id = 12;
+  optional int64 conversation_version = 13;
+  optional bool is_participant = 14;
+  optional int64 read_index_v2 = 15;
+  optional int64 min_index_v2 = 16;
+  optional int64 server_unread_count = 20;
+  optional int64 last_message_index = 21;
+}
+
+message RobotInfo {
+  optional int64 user_id = 1;
+  optional string sec_uid = 2;
+  map<string, string> ext = 99;
+}
+
+message ConversationInfoV2 {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  optional string ticket = 4;
+  optional ParticipantsPage first_page_participants = 6;
+  optional int32 participants_count = 7;
+  optional bool is_participant = 8;
+  optional int32 inbox_type = 9;
+  optional int32 badge_count = 10;
+  repeated MuteBadgeCountInfo mute_badge_count_infos = 11;
+  optional Participant user_info = 20;
+  optional ConversationCoreInfo conversation_core_info = 50;
+  optional ConversationSettingInfo conversation_setting_info = 51;
+  repeated RobotInfo bots = 60;
+}
+
+message ConversationCoreInfo {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  optional int64 info_version = 4;
+  optional string name = 5;
+  optional string desc = 6;
+  optional string icon = 7;
+  optional int32 inbox_type = 8;
+  optional string notice = 9;
+  map<string, string> ext = 11;
+  optional int64 owner = 12;
+  optional string sec_owner = 13;
+  optional BlockStatus block_status = 14;
+  optional bool block_normal_only = 15;
+  optional int32 mode = 16;
+  optional int64 creator_uid = 17;
+  optional int64 create_time = 18;
+  optional BlockSource block_source = 40;
+  optional int64 left_block_time = 41;
+  repeated ExtVersion ext_version = 42;
+  optional bool ext_full = 43;
+}
+
+message ConversationSettingInfo {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  optional int64 min_index = 4;
+  optional int64 read_index = 5;
+  optional int32 mute = 6;
+  optional int32 stick_on_top = 7;
+  optional int32 inbox_type = 8;
+  map<string, string> ext = 9;
+  optional int64 setting_version = 10;
+  optional int32 favorite = 11;
+  optional int64 set_top_time = 12;
+  optional int64 set_favorite_time = 13;
+  optional int64 read_index_v2 = 14;
+  optional int64 min_index_v2 = 15;
+  optional int32 read_badge_count = 16;
+  repeated MuteReadBadgeCountInfo mute_read_badge_count_infos = 17;
+  optional int64 version = 18;
+  optional int32 push_status = 30;
+  optional ConvUnreadUnion ConvUnreadUnion = 31;
+  repeated ExtVersion ext_version = 32;
+  optional bool ext_full = 33;
+}
+
+message ExtVersion {
+  optional string key = 1;
+  optional int64 version = 2;
+}
+
+message MuteReadBadgeCountInfo {
+  required MuteMessageType message_type = 1;
+  required int32 read_badge_count = 2;
+}
+
+message ConvUnreadUnion {
+  map<int32, ConvUnread> ConvUnreadInfo = 1;
+}
+
+message ConvUnread {
+  optional int32 badge_count = 1;
+  optional int32 read_badge_count = 2;
+}
+
+message GroupInfo {
+  optional string conversation_id = 1;
+  optional int64 info_version = 2;
+  optional string group_name = 5;
+  optional string group_desc = 6;
+  optional string group_icon = 7;
+  map<string, string> ext = 10;
+}
+
+message MessagesPerUserRequestBody {
+  optional int64 cursor = 1;
+  optional int32 limit = 2 [default = 50];
+  optional int64 interval = 3;
+  optional int32 new_user = 4;
+}
+
+message MessagesPerUserResponseBody {
+  repeated MessageBody messages = 1;
+  optional int64 next_cursor = 2;
+  optional bool has_more = 3;
+  optional int64 next_interval = 4;
+  optional int64 next_conversation_version = 5;
+  repeated ConversationBadgeCountInfo conversation_badge_count = 6;
+  optional int64 next_cmd_index = 7;
+}
+
+message ConversationBadgeCountInfo {
+  required int64 conversation_short_id = 1;
+  required int32 badge_count = 2;
+  required int64 conversation_index_v2 = 3;
+  required string conversation_id = 4;
+}
+
+message InboxMessagesPerUser {
+  optional int32 inbox_type = 1;
+  optional int64 cursor = 2;
+}
+
+message CheckMessagePerUserRequestBody {
+  repeated InboxMessagesPerUser checks = 1;
+}
+
+message InboxMessagesPerUserResponseBody {
+  optional int32 inbox_type = 1;
+  optional bool has_more = 2;
+}
+
+message CheckMessagesPerUserResponseBody {
+  repeated InboxMessagesPerUserResponseBody messages = 1;
+}
+
+message MessagesPerUserInitRequestBody {
+  optional int64 cursor = 1;
+  optional int32 new_user = 2;
+  optional int32 init_sub_type = 3;
+}
+
+message MessagesPerUserInitResponseBody {
+  repeated MessageBody messages = 1;
+  repeated ConversationInfo conversations = 2;
+  optional int64 per_user_cursor = 3;
+  optional int64 next_cursor = 4;
+  optional bool has_more = 5;
+  optional InitType init_type = 6;
+}
+
+message MessagesPerUserInitV2RequestBody {
+  optional int64 cursor = 1;
+  optional int32 new_user = 2;
+  optional int32 init_sub_type = 3;
+}
+
+message MessagesPerUserInitV2ResponseBody {
+  repeated MessageBody messages = 1;
+  repeated ConversationInfoV2 conversations = 2;
+  optional int64 per_user_cursor = 3;
+  optional int64 next_cursor = 4;
+  optional bool has_more = 5;
+  optional InitType init_type = 6;
+  optional int64 cmd_start_index = 7;
+  optional int64 next_conversation_version = 8;
+}
+
+message ReportGetMessagesCursorRequestBody {
+  optional int64 cursor = 1;
+}
+
+message ConversationsListRequestBody {
+  optional int64 cursor = 1;
+  optional ConversationsListPolicy policy = 2;
+}
+
+message ConversationsListResponseBody {
+  repeated ConversationInfo conversations = 1;
+  optional int64 next_cursor = 2;
+  optional bool has_more = 3;
+}
+
+message MessagesInConversationRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  optional MessageDirection direction = 4;
+  optional int64 anchor_index = 5;
+  optional int32 limit = 6 [default = 50];
+}
+
+message MessagesInConversationResponseBody {
+  repeated MessageBody messages = 1;
+  optional int64 next_cursor = 2;
+  optional bool has_more = 3;
+}
+
+message GetMessagesCheckInfoInConversationRequestBody {
+  optional int64 conversation_short_id = 2;
+  optional string conversation_id = 5;
+  optional int32 conversation_type = 6;
+  optional int64 cursor_reverse_begin = 3;
+  optional int64 cursor_reverse_end = 7;
+  optional int32 expect_msg_total_count = 4;
+  optional int64 max_index_v2 = 18;
+  optional int64 min_index_v2 = 19;
+}
+
+message MessagesCheckInfo {
+  optional int64 head_msg_index = 1;
+  optional int64 tail_msg_index = 2;
+  optional int32 msg_count = 3;
+  optional uint32 indexes_checksum = 4;
+}
+
+message GetMessagesCheckInfoInConversationResponseBody {
+  repeated MessagesCheckInfo msgs_checkinfo_list = 1;
+  optional int32 real_msg_total_count = 2;
+  optional int64 cursor_reverse_next = 4;
+  repeated int64 index_v2_list = 15;
+}
+
+message CreateConversationRequestBody {
+  optional int32 conversation_type = 1;
+  repeated int64 participants = 2;
+}
+
+message CreateConversationResponseBody {
+  optional ConversationInfo conversation = 1;
+  optional int64 check_code = 2;
+  optional string check_message = 3;
+  optional string extra_info = 4;
+  optional int32 status = 5;
+}
+
+message CreateConversationV2RequestBody {
+  optional int32 conversation_type = 1;
+  repeated int64 participants = 2;
+  optional bool persistent = 3;
+  optional string idempotent_id = 4;
+  optional string name = 6;
+  optional string avatar_url = 7;
+  optional string description = 8;
+  map<string, string> biz_ext = 11;
+}
+
+message CreateConversationV2ResponseBody {
+  optional ConversationInfoV2 conversation = 1;
+  optional int64 check_code = 2;
+  optional string check_message = 3;
+  optional string extra_info = 4;
+  optional int32 status = 5;
+}
+
+message SendUserActionRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  optional UserActionType action_type = 4;
+  map<string, string> extra = 5;
+}
+
+message SendUserActionResponseBody {
+}
+
+message SendInputStatusRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  optional InputStatus status = 4;
+  map<string, string> extra = 5;
+}
+
+message GetConfigsRequestBody {
+}
+
+message GetConfigsResponseBody {
+  optional int32 version = 1;
+  repeated Config configs = 2;
+}
+
+message Config {
+  optional string conf_name = 1;
+  optional string conf_value = 2;
+}
+
+message ConvCountReport {
+  optional int64 conv_short_id = 1;
+  optional int64 unread_count = 2;
+  optional ConversationType conversation_type = 3;
+  optional int32 customed_conversation_type = 4;
+}
+
+message UnReadCountReportRequestBody {
+  optional int64 total_unread_count = 1;
+  repeated ConvCountReport conv_unread_count = 2;
+}
+
+message UnReadCountReportResponseBody {
+  required bool set_total_status = 1;
+  repeated int64 failed_conv_list = 2;
+}
+
+message GetUnreadCountRequestBody {
+  optional bool get_total = 1;
+  repeated int64 conv_short_id = 2;
+}
+
+message GetUnreadCountResponseBody {
+  optional int64 total_unread_count = 1;
+  map<int64, int64> conv_unread_count = 2;
+  repeated int64 failed_conv_list = 3;
+}
+
+message GetBlockListRequestBody {
+  optional int64 cursor = 1;
+  optional int32 limit = 2;
+  optional bool block_type = 3;
+  optional ConversationType conv_type = 4;
+  optional int64 conv_short_id = 5;
+  optional string conv_id = 6;
+  optional int32 customed_conv_type = 7;
+}
+
+message BlockUserInfo {
+  optional int64 user_id = 1;
+  optional int64 create_time = 2;
+}
+
+message GetBlockListResponseBody {
+  repeated BlockUserInfo user_info = 1;
+  optional bool has_more = 2;
+  optional int64 next_cursor = 3;
+}
+
+message SetBlocklistRequestBody {
+  optional bool set_block_list = 1;
+  repeated int64 blocklist = 2;
+  optional bool block_type = 3;
+  optional ConversationType conv_type = 4;
+  optional int64 conv_short_id = 5;
+  optional string conv_id = 6;
+  optional int32 customed_conv_type = 7;
+}
+
+message SetBlocklistResponseBody {
+  repeated int64 failed_list = 1;
+}
+
+message CheckInBlockListRequestBody {
+  optional int64 user_to_check = 1;
+  optional bool block_type = 2;
+  optional ConversationType conv_type = 3;
+  optional int64 conv_short_id = 4;
+  optional string conv_id = 5;
+  optional int32 customed_conv_type = 6;
+}
+
+message CheckInBlockListResponseBody {
+  optional bool in_blocklist = 1;
+}
+
+message BlockMembersRequestBody {
+  optional BlockStatus block_status = 1;
+  map<int64, int64> block_time = 2;
+  optional int64 conv_short_id = 3;
+  optional int32 conversation_type = 4;
+  optional string conversation_id = 5;
+  map<string, string> biz_ext = 11;
+}
+
+message BlockMembersResponseBody {
+  repeated int64 failed_members = 1;
+}
+
+message BlockConversationRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conv_short_id = 2;
+  optional int32 conversation_type = 3;
+  optional BlockStatus block_status = 4;
+  optional bool block_normal_only = 5;
+}
+
+message BlockConversationResponseBody {
+}
+
+message MarkMessageRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  optional int64 server_message_id = 4;
+  optional bool do_action = 5;
+  optional ActionType action_type = 6;
+  optional int64 sort_time = 7;
+  optional int64 tag = 8;
+}
+
+message MarkMessageResponseBody {
+  optional int64 server_message_id = 1;
+  optional int64 check_code = 2;
+  optional string check_message = 3;
+  optional StatusCode status = 4;
+}
+
+message BatchUnmarkMessageRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  repeated int64 server_message_ids = 4;
+  optional ActionType action_type = 5;
+  optional int64 tag = 6;
+}
+
+message BatchUnmarkMessageResponseBody {
+  optional int64 server_message_id = 1;
+  optional int64 check_code = 2;
+  optional string check_message = 3;
+  optional StatusCode status = 4;
+}
+
+message PullMarkMessageRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  optional int64 cursor = 4;
+  optional int64 limit = 5;
+  optional bool asc = 6;
+  optional ActionType action_type = 7;
+  optional int64 tag = 8;
+  optional bool clear_unread_count = 9;
+}
+
+message PullMarkMessageResponseBody {
+  repeated MessageBody messages = 1;
+  optional bool has_more = 2;
+  optional int64 next_cursor = 3;
+}
+
+message MarkMsgUnreadCountReportRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  optional int64 total_unread_count = 4;
+  map<int64, int64> tag_unread_count = 5;
+}
+
+message MarkMsgUnreadCountReportResponseBody {
+  optional bool set_total_status = 1;
+  repeated int64 failed_tag_list = 2;
+}
+
+message MarkMsgGetUnreadCountRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  optional bool get_total = 4;
+  repeated int64 tags = 5;
+}
+
+message MarkMsgGetUnreadCountResponseBody {
+  optional int64 total_count = 1;
+  map<int64, int64> tag_unread_count = 2;
+  repeated int64 failed_tag_list = 3;
+}
+
+message SetConversationInfoRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  map<string, string> ext = 4;
+}
+
+message SetConversationInfoResponseBody {
+  optional ConversationInfo conversation = 1;
+  optional int32 status = 2;
+  optional int64 check_code = 3;
+  optional string check_message = 4;
+  optional string extra_info = 5;
+}
+
+message DeleteConversationRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  optional int64 last_message_index = 4;
+  optional int64 last_message_index_v2 = 5;
+  optional int32 badge_count = 6;
+}
+
+message DissolveConversationRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+}
+
+message DeleteMessageRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  optional int64 message_id = 4;
+}
+
+message MarkConversationReadRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  optional int64 read_message_index = 4;
+  optional int64 conv_unread_count = 5;
+  optional int64 total_unread_count = 6;
+  optional int64 read_message_index_v2 = 7;
+  optional int32 read_badge_count = 8;
+  optional string ticket = 9;
+  optional int64 server_message_id = 10;
+}
+
+message GetConversationParticipantsReadIndexV3RequestBody {
+  optional int64 conversation_short_id = 1;
+  optional int32 conversation_type = 2;
+  optional string conversation_id = 3;
+}
+
+message GetConversationParticipantsReadIndexV3ResponseBody {
+  repeated ParticipantReadIndex indexes = 1;
+}
+
+message BatchGetConversationParticipantsReadIndexRequestBody {
+  repeated string conversation_id = 1;
+  repeated int64 conversation_short_id = 2;
+  optional string request_from = 3;
+  optional bool min_index_required = 4;
+}
+
+message BatchGetConversationParticipantsReadIndexResponseBody {
+  repeated ConversationParticipantReadIndex conversationParticipantsReadIndex = 1;
+}
+
+message ConversationParticipantReadIndex {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  repeated ParticipantReadIndex participantReadIndex = 3;
+}
+
+message ParticipantReadIndex {
+  optional int64 user_id = 1;
+  optional string sec_uid = 2;
+  optional int64 index = 3;
+  optional int64 index_v2 = 4;
+  optional int64 index_min = 5;
+}
+
+message GetConversationParticipantsMinIndexV3RequestBody {
+  optional int64 conversation_short_id = 1;
+  optional int32 conversation_type = 2;
+  optional string conversation_id = 3;
+}
+
+message GetConversationParticipantsMinIndexV3ResponseBody {
+  repeated ParticipantMinIndex indexes = 1;
+}
+
+message ParticipantMinIndex {
+  optional int64 user_id = 1;
+  optional string sec_uid = 2;
+  optional int64 index = 3;
+  optional int64 index_v2 = 4;
+}
+
+message BatchMarkConversationReadRequestBody {
+  repeated MarkConversationReadRequestBody mark_read_requests = 1;
+}
+
+message BatchMarkConversationReadResponseBody {
+  repeated MarkConversationReadRequestBody failed_requests = 1;
+}
+
+message SendMessageP2PRequestBody {
+  optional SendType send_type = 1;
+  optional string conversation_id = 2;
+  optional int32 conversation_type = 3;
+  optional int64 conversation_short_id = 4;
+  repeated int64 visible_user = 5;
+  repeated int64 invisible_user = 6;
+  optional int32 message_type = 7;
+  optional string content = 8;
+  map<string, string> ext = 9;
+  optional string client_message_id = 10;
+}
+
+message SendMessageP2PResponseBody {
+  repeated int64 failed_user = 1;
+}
+
+message SendMessageRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  optional string content = 4;
+  map<string, string> ext = 5;
+  optional int32 message_type = 6;
+  optional string ticket = 7;
+  optional string client_message_id = 8;
+  repeated int64 mentioned_users = 9;
+  optional bool ignore_badge_count = 10;
+  optional ReferencedMessageInfo ref_msg_info = 11;
+  map<string, string> client_ext = 12;
+}
+
+message ReferencedMessageInfo {
+  required int64 referenced_message_id = 1;
+  required string hint = 2;
+  optional int64 root_message_id = 3;
+  optional int64 root_message_conv_index = 4;
+}
+
+message SendMessageResponseBody {
+  optional int64 server_message_id = 1;
+  optional string extra_info = 2;
+  optional int32 status = 3;
+  optional string client_message_id = 4;
+  optional int64 check_code = 5;
+  optional string check_message = 6;
+  optional string filtered_content = 7;
+  optional bool is_async_send = 8;
+  optional string new_ticket = 9;
+  optional ConversationInfoV2 conversation = 10;
+}
+
+message ModifyMessageRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  optional string server_message_id = 4;
+  map<string, string> ext = 5;
+  optional string ticket = 6;
+}
+
+message ModifyMessageResponseBody {
+}
+
+message MsgTrace {
+  map<int32, int64> metrics = 1;
+  optional MsgTracePath path = 2;
+}
+
+message MuteBadgeCountInfo {
+  required MuteMessageType message_type = 1;
+  required int32 badge_count = 2;
+}
+
+message NewMessageNotify {
+  optional string conversation_id = 2;
+  optional int32 conversation_type = 3;
+  optional NewMessageNotifyType notify_type = 4;
+  optional MessageBody message = 5;
+  optional int64 previous_cursor = 6;
+  optional int64 next_cursor = 7;
+  optional int64 index_in_conversation = 8;
+  optional int64 index_in_conversation_v2 = 9;
+  optional int64 conversation_version = 10;
+  optional int64 previous_conversation_version = 11;
+  optional int64 cmd_message_index = 12;
+  optional int32 badge_count = 13;
+  optional MsgTrace trace = 14;
+  optional ReferenceInfo ref_msg_info = 15;
+  optional int64 previous_msg_index_in_conv = 16;
+  optional int64 readconv_version = 17;
+  optional int64 pre_readconv_version = 18;
+  optional MuteBadgeCountInfo mute_badge_count_info = 19;
+  optional bool need_pull = 21;
+}
+
+message NewP2PMessageNotify {
+  optional SendType send_type = 1;
+  optional int64 sender = 2;
+  optional string sec_sender = 3;
+  optional string conversation_id = 4;
+  optional int64 conversation_short_id = 5;
+  optional int32 conversation_type = 6;
+  optional int32 message_type = 7;
+  optional string content = 8;
+  map<string, string> ext = 9;
+  optional int64 create_time = 10;
+}
+
+message NewFriendMessageNotify {
+  optional FriendMessageType message_type = 1;
+  optional int64 from_id = 2;
+  optional int64 to_id = 3;
+  optional string content = 4;
+  map<string, string> ext = 5;
+}
+
+message MarkConversationReadNotify {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 read_index = 3;
+  optional int64 read_index_v2 = 4;
+}
+
+message ConversationInfoUpdatedNotify {
+  optional ConversationInfo conversation = 1;
+}
+
+message GetConversationInfoRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+}
+
+message GetConversationInfoResponseBody {
+  optional ConversationInfo conversation_info = 1;
+}
+
+message ConversationsPerUserByFavoriteV2RequestBody {
+  optional int64 cursor = 1;
+  optional int32 limit = 2 [default = 500];
+}
+
+message ConversationsPerUserByTopV2RequestBody {
+  optional int64 cursor = 1;
+  optional int32 limit = 2 [default = 500];
+}
+
+message GetConversationInfoV2RequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+}
+
+message GetConversationInfoV2ResponseBody {
+  optional ConversationInfoV2 conversation_info = 1;
+}
+
+message GetConversationInfoListRequestBody {
+  repeated GetConversationInfoRequestBody conversation_info_list = 1;
+}
+
+message GetConversationInfoListResponseBody {
+  repeated ConversationInfo conversation_info_list = 1;
+}
+
+message GetConversationInfoListV2RequestBody {
+  repeated GetConversationInfoV2RequestBody conversation_info_list = 1;
+}
+
+message GetConversationInfoListV2ResponseBody {
+  repeated ConversationInfoV2 conversation_info_list = 1;
+}
+
+message PreviewerGetConversationInfoListRequestBody {
+  repeated GetConversationInfoV2RequestBody conversation_info_list = 1;
+}
+
+message PreviewerGetConversationInfoListResponseBody {
+  repeated ConversationInfoV2 conversation_info_list = 1;
+  optional int32 status = 2;
+  optional int64 check_code = 3;
+  optional string check_message = 4;
+}
+
+message GetConversationInfoListByFavoriteV2ResponseBody {
+  repeated ConversationInfoV2 conversation_info_list = 1;
+  optional bool has_more = 2;
+  optional int64 next_cursor = 3;
+}
+
+message GetConversationInfoListByTopV2ResponseBody {
+  repeated ConversationInfoV2 conversation_info_list = 1;
+  optional bool has_more = 2;
+  optional int64 next_cursor = 3;
+}
+
+message GetConversationsCheckInfoRequestBody {
+}
+
+message ConversationCheckInfo {
+  optional int64 conversation_short_id = 1;
+  optional string conversation_id = 2;
+  optional int32 conversation_type = 3;
+}
+
+message GetConversationsCheckInfoResponseBody {
+  repeated ConversationCheckInfo conversation_checkinfo_list = 1;
+}
+
+message RecallMessageRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  optional int64 server_message_id = 4;
+}
+
+message RecallMessageResponseBody {
+  optional string toast = 1;
+}
+
+message ConversationAddParticipantsRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  repeated int64 participants = 4;
+  map<string, string> biz_ext = 5;
+}
+
+message SecUidPair {
+  optional int64 uid = 1;
+  optional string sec_uid = 2;
+}
+
+message ConversationAddParticipantsResponseBody {
+  repeated int64 success_participants = 1;
+  repeated int64 failed_participants = 2;
+  optional int32 status = 3;
+  optional string extra_info = 4;
+  optional int64 check_code = 5;
+  optional string check_message = 6;
+  repeated SecUidPair sec_success_participants = 7;
+  repeated SecUidPair sec_failed_participants = 8;
+}
+
+message ConversationRemoveParticipantsRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  repeated int64 participants = 4;
+  map<string, string> biz_ext = 5;
+}
+
+message ConversationRemoveParticipantsResponseBody {
+  repeated int64 failed_participants = 1;
+  optional int32 status = 2;
+  optional string extra_info = 3;
+  optional int64 check_code = 4;
+  optional string check_message = 5;
+  repeated SecUidPair failed_sec_participants = 6;
+}
+
+message ConversationLeaveRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+}
+
+message ConversationSetRoleRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  map<int64, int32> roles = 4;
+}
+
+message ConversationSetRoleResponseBody {
+  repeated int64 success_participants = 1;
+  repeated int64 failed_participants = 2;
+  optional int32 status = 3;
+  optional string extra_info = 4;
+  optional int64 check_code = 5;
+  optional string check_message = 6;
+}
+
+message ConversationParticipantsListRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  optional int64 cursor = 4;
+  optional int32 limit = 5 [default = 100];
+}
+
+message ConversationParticipantsListResponseBody {
+  optional ParticipantsPage participants_page = 1;
+}
+
+message MgetConversationParticipantsRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  repeated int64 participants = 4;
+}
+
+message MgetConversationParticipantsResponseBody {
+  repeated Participant participants = 1;
+}
+
+message UpdateConversationParticipantRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  optional int64 user_id = 4;
+  optional int32 role = 5;
+  optional string alias = 6;
+  optional bool is_alias_set = 7;
+  map<string, string> biz_ext = 11;
+}
+
+message UpdateConversationParticipantResponseBody {
+  optional Participant participant = 1;
+  optional int32 status = 2;
+  optional string extra_info = 3;
+  optional int64 check_code = 4;
+  optional string check_message = 5;
+}
+
+message BatchUpdateConversationParticipantRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  repeated int64 participants = 4;
+  optional int32 role = 5;
+  map<string, string> biz_ext = 6;
+}
+
+message UpdateConversationParticipantResult {
+  optional Participant participant = 1;
+  optional int32 status = 2;
+  optional string extra_info = 3;
+  optional int64 check_code = 4;
+  optional string check_message = 5;
+}
+
+message BatchUpdateConversationParticipantResponseBody {
+  repeated UpdateConversationParticipantResult success_participants = 1;
+  repeated UpdateConversationParticipantResult callback_failed_participants = 2;
+  repeated int64 failed_participants = 3;
+}
+
+message GetGroupInfoRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+}
+
+message GetGroupInfoResponseBody {
+  optional GroupInfo group_info = 1;
+}
+
+message GetGroupInfoListRequestBody {
+  repeated GetGroupInfoRequestBody group_info_list = 1;
+}
+
+message GetGroupInfoListResponseBody {
+  repeated GroupInfo group_info_list = 1;
+}
+
+message SetGroupInfoRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  optional string group_name = 5;
+  optional string group_desc = 6;
+  optional string group_icon = 7;
+  map<string, string> ext = 8;
+}
+
+message SetGroupInfoResponseBody {
+  optional GroupInfo group_info = 1;
+  optional int32 status = 2;
+  optional string extra_info = 3;
+  optional int64 check_code = 4;
+  optional string check_message = 5;
+}
+
+message GetConversationCoreInfoRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+}
+
+message GetConversationCoreInfoResponseBody {
+  optional ConversationCoreInfo conversation_core_info = 1;
+}
+
+message GetConversationCoreInfoListRequestBody {
+  repeated GetConversationCoreInfoRequestBody conversation_core_info_list = 1;
+}
+
+message GetConversationCoreInfoListResponseBody {
+  repeated ConversationCoreInfo conversation_core_info_list = 1;
+}
+
+message SetConversationCoreInfoRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  optional string name = 4;
+  optional string desc = 5;
+  optional string icon = 6;
+  optional string notice = 7;
+  optional bool is_name_set = 8;
+  optional bool is_desc_set = 9;
+  optional bool is_icon_set = 10;
+  optional bool is_notice_set = 11;
+  map<string, string> ext = 12;
+}
+
+message SetConversationCoreInfoResponseBody {
+  optional ConversationCoreInfo conversation_core_info = 1;
+  optional int32 status = 2;
+  optional string extra_info = 3;
+  optional int64 check_code = 4;
+  optional string check_message = 5;
+}
+
+message UpsertConversationCoreExtInfoRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  map<string, string> ext = 4;
+}
+
+message UpsertConversationCoreExtInfoResponseBody {
+  optional ConversationCoreInfo core_info = 1;
+  optional int32 status = 2;
+  optional int64 check_code = 3;
+  optional string check_message = 4;
+  optional string extra_info = 5;
+}
+
+message DeleteConversationCoreExtInfoRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  map<string, string> ext = 3;
+}
+
+message DeleteConversationCoreExtInfoResponseBody {
+  optional ConversationCoreInfo core_info = 1;
+  optional int32 status = 2;
+  optional int64 check_code = 3;
+  optional string check_message = 4;
+  optional string extra_info = 5;
+}
+
+message SetConversationSettingInfoRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  optional bool set_stick_on_top = 4;
+  optional bool set_mute = 5;
+  optional bool set_favorite = 6;
+}
+
+message SetConversationSettingInfoResponseBody {
+  optional ConversationSettingInfo setting_info = 1;
+  optional int32 status = 2;
+  optional int64 check_code = 3;
+  optional string check_message = 4;
+  optional string extra_info = 5;
+}
+
+message UpsertConversationSettingExtInfoRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  map<string, string> ext = 4;
+}
+
+message UpsertConversationSettingExtInfoResponseBody {
+  optional ConversationSettingInfo setting_info = 1;
+  optional int32 status = 2;
+  optional int64 check_code = 3;
+  optional string check_message = 4;
+  optional string extra_info = 5;
+}
+
+message DeleteConversationSettingExtInfoRequestBody {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  map<string, string> ext = 3;
+}
+
+message DeleteConversationSettingExtInfoResponseBody {
+  optional ConversationSettingInfo setting_info = 1;
+  optional int32 status = 2;
+  optional int64 check_code = 3;
+  optional string check_message = 4;
+  optional string extra_info = 5;
+}
+
+message GetConversationSettingInfoRequestBody {
+  optional int64 conversation_short_id = 2;
+}
+
+message GetConversationSettingInfoResponseBody {
+  optional ConversationSettingInfo conversation_setting_info = 1;
+  optional int32 status = 2;
+  optional int64 check_code = 3;
+  optional string check_message = 4;
+  optional string extra_info = 5;
+}
+
+message StrangerConversation {
+  optional int64 conversation_short_id = 1;
+  optional int32 unread = 2;
+  optional MessageBody last_message = 3;
+  optional string conversation_id = 4;
+  repeated Participant participants = 5;
+  optional int32 badge_count = 6;
+  map<string, string> ext = 7;
+}
+
+message StrangerNewMessageNotify {
+  optional MessageBody message = 2;
+}
+
+message GetStrangerConversationListRequestBody {
+  optional int64 cursor = 1;
+  optional int64 count = 2 [default = 50];
+  optional bool show_total_unread = 3;
+  optional string biz_info = 4;
+}
+
+message GetStrangerConversationListResponseBody {
+  optional int64 next_cursor = 1;
+  optional bool has_more = 2;
+  optional int32 total_unread = 3;
+  repeated StrangerConversation conversation_list = 4;
+}
+
+message GetStrangerMessagesRequestBody {
+  optional int64 conversation_short_id = 1;
+  optional bool reset_unread_count = 2;
+}
+
+message GetStrangerMessagesResponseBody {
+  repeated MessageBody messages = 3;
+}
+
+message DeleteStrangerMessageRequestBody {
+  optional int64 server_message_id = 1;
+  optional int64 conversation_short_id = 2;
+}
+
+message DeleteStrangerMessageResponseBody {
+}
+
+message DeleteStrangerConversationRequestBody {
+  optional int64 conversation_short_id = 1;
+}
+
+message DeleteStrangerConversationResponseBody {
+}
+
+message DeleteStrangerAllConversationRequestBody {
+}
+
+message DeleteStrangerAllConversationResponseBody {
+}
+
+message MarkStrangerConversationReadRequestBody {
+  optional int64 conversation_short_id = 1;
+}
+
+message MarkStrangerConversationReadResponseBody {
+}
+
+message MarkStrangerAllConversationReadRequestBody {
+}
+
+message MarkStrangerAllConversationReadResponseBody {
+}
+
+message GetStrangerUnreadCountRequestBody {
+  optional bool reset_unread_count = 1;
+}
+
+message GetStrangerUnreadCountResponseBody {
+  required int64 user_unread_count = 1;
+}
+
+message MessagePropertyContent {
+  optional int32 type = 1;
+  optional SyncContent sync_content = 2;
+  optional ReactionContent reaction_content = 3;
+  optional int64 index_in_message = 4;
+}
+
+message ReactionContent {
+  optional int32 id = 1;
+  optional string name = 2;
+  optional int32 status = 3;
+  optional int64 target_message_id = 4;
+  optional string target_client_message_id = 5;
+}
+
+message ReactionMessageRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  optional ReactionContent reaction_content = 4;
+  optional int32 message_type = 6;
+  optional string ticket = 7;
+  optional string client_message_id = 8;
+}
+
+message ReactionMessageResponseBody {
+  optional int64 server_message_id = 1;
+  optional string client_message_id = 2;
+  optional SendMessageStatus status = 3;
+}
+
+message SyncContent {
+  optional int32 status = 1;
+  optional int64 target_message_id = 2;
+  optional string target_client_message_id = 3;
+}
+
+message SyncMessageRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  optional SyncContent sync_content = 4;
+  optional int32 message_type = 6;
+  optional string ticket = 7;
+  optional string client_message_id = 8;
+  optional int64 target_message_sender = 9;
+}
+
+message SyncMessageResponseBody {
+  optional int64 server_message_id = 1;
+  optional string client_message_id = 2;
+  optional SendMessageStatus status = 3;
+}
+
+message ModifyPropertyContent {
+  optional OPERATION_TYPE operation = 1;
+  optional string key = 2;
+  optional string value = 3;
+  optional string idempotent_id = 4;
+}
+
+message ModifyPropertyBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  optional int64 server_message_id = 4;
+  optional string client_message_id = 5;
+  repeated ModifyPropertyContent modify_property_content = 6;
+}
+
+message ModifyMessagePropertyRequestBody {
+  optional ModifyPropertyBody property_list = 1;
+  optional string ticket = 2;
+}
+
+message ModifyMessagePropertyResponseBody {
+  optional ModifyMessagePropertyStatus status = 1;
+  optional int64 version = 2;
+}
+
+message GetUploadTokenRequestBody {
+  optional string vsdk_version = 1;
+  optional MediaTokenType token_type = 2;
+}
+
+message GetUploadTokenResponseBody {
+  optional string access_key = 1;
+  repeated string hosts = 2;
+  optional string token = 3;
+  optional MediaTokenType token_type = 4;
+  optional string secret_access_key = 5;
+  optional string space_name = 6;
+  optional string service_id = 7;
+  optional string expire_time = 8;
+  optional string current_time = 9;
+}
+
+message ImgOption {
+  optional string tplv = 1;
+  repeated string params = 2;
+  optional string format = 3;
+  repeated string urls = 100;
+}
+
+message VideoOption {
+  optional string vid = 1;
+  optional string cover_uri = 2;
+  repeated string urls = 100;
+  repeated string cover_urls = 101;
+}
+
+message AudioOption {
+  optional string vid = 1;
+  repeated string urls = 100;
+}
+
+message FileOption {
+  repeated string urls = 100;
+}
+
+message GetMediaUrlsRequestBody {
+  optional int32 source_appid = 1;
+  optional string uri = 2;
+  optional int32 media_type = 3;
+  optional bool encrypted = 4;
+  repeated ImgOption img_options = 5;
+  repeated VideoOption video_options = 6;
+  repeated AudioOption audio_options = 7;
+  repeated FileOption file_options = 8;
+  optional string encrypted_uri = 9;
+  optional ReadURLFrom read_url_from = 10;
+}
+
+message GetMediaUrlsResponseBody {
+  optional string uri = 1;
+  optional int32 media_type = 2;
+  repeated ImgOption img_options = 3;
+  repeated VideoOption video_options = 4;
+  repeated AudioOption audio_options = 5;
+  repeated FileOption file_options = 6;
+  repeated string encrypted_urls = 7;
+}
+
+message VcdConversation {
+  optional string conversation_id = 1;
+  optional int64 conversation_short_id = 2;
+  optional int32 conversation_type = 3;
+  optional int64 vcd_version = 4;
+}
+
+message VcdCleanRequestBody {
+  repeated VcdConversation local_conversations = 1;
+}
+
+message VcdCleanResponseBody {
+  repeated VcdConversation server_conversations = 1;
+}
+
+message GetTicketRequestBody {
+  optional TicketType ticket_type = 1;
+  optional ConversationType conversation_type = 2;
+  optional int64 to_id = 4;
+  optional int64 conversation_short_id = 5;
+  map<string, string> ext = 10;
+  optional int32 customed_conversation_type = 6;
+}
+
+message GetTicketResponseBody {
+  optional string ticket = 1;
+}
+
+message GetUserConversationListRequestBody {
+  optional SortType sort_type = 1;
+  optional int64 cursor = 2;
+  optional ConversationType con_type = 3;
+  optional int64 limit = 4;
+  optional int32 include_role = 5;
+  optional int32 exclude_role = 6;
+  optional bool include_removed_group = 7;
+  optional bool with_cold = 8;
+  optional int32 customed_con_type = 9;
+}
+
+message GetUserConversationListResponseBody {
+  repeated ConversationInfoV2 list = 1;
+  optional bool has_more = 2;
+  optional int64 next_cursor = 3;
+}
+
+message BroadcastSendMessageRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  optional string content = 4;
+  map<string, string> ext = 5;
+  optional int32 message_type = 6;
+  optional string ticket = 7;
+  optional string client_message_id = 8;
+  repeated int64 mentioned_users = 9;
+}
+
+message BroadcastSendMessageResponseBody {
+  optional int64 server_message_id = 1;
+  optional string extra_info = 2;
+  optional int32 status = 3;
+  optional string client_message_id = 4;
+  optional int64 check_code = 5;
+  optional string check_message = 6;
+  optional string filtered_content = 7;
+}
+
+message BroadcastRecvMessageRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  optional int64 cursor = 4;
+  optional int64 limit = 5;
+  optional bool reverse = 6;
+  optional int32 pull_type = 7;
+}
+
+message BroadcastRecvMessageResponseBody {
+  repeated MessageBody messages = 1;
+  optional bool has_more = 2;
+  optional int64 next_cursor = 3;
+}
+
+message ConversationRequest {
+  optional int64 conversation_short_id = 1;
+  optional int32 conversation_type = 2;
+}
+
+message BroadcastUserCounterRequestBody {
+  repeated ConversationRequest conversations = 1;
+}
+
+message BroadcastUserInfo {
+  optional int64 conversation_short_id = 1;
+  optional int32 counter = 2;
+  optional int32 conversation_type = 3;
+}
+
+message BroadcastUserCounterResponseBody {
+  repeated BroadcastUserInfo infos = 1;
+}
+
+message ClientACKRequestBody {
+  required int64 start_time_stamp = 1;
+  required int32 cmd = 2;
+  optional NetworkType network_type = 3;
+  optional string logid = 4;
+  optional int64 client_time_stamp = 5;
+  optional int64 server_message_id = 6;
+  optional MsgReportType type = 7;
+}
+
+message ClientBatchACKRequestBody {
+  repeated ClientACKRequestBody ack_list = 1;
+}
+
+message ClientACKResponseBody {
+}
+
+message ClientBatchACKResponseBody {
+}
+
+message VoipInfo {
+  optional int64 user_id = 1;
+  optional string device_id = 2;
+  optional string channel_id = 3;
+  optional string token = 4;
+  optional VoipStatus status = 5;
+  optional int64 caller_id = 6;
+  optional int64 created_time_ms = 7;
+  optional int64 updated_time_ms = 8;
+  optional int64 con_short_id = 9;
+  optional VoipType v_type = 10;
+  optional int64 srv_msg_id = 11;
+}
+
+message CreateVoipRequestBody {
+  optional string idempotent_id = 1;
+  optional VoipType v_type = 2;
+  optional int64 con_short_id = 3;
+  optional int64 srv_msg_id = 4;
+  optional string ref_channel_id = 5;
+  optional VoipMode voip_mode = 6;
+}
+
+message CreateVoipResponseBody {
+  optional VoipInfo info = 1;
+  optional VoipStatusCode status_code = 2;
+  optional VoipMode voip_mode = 3;
+}
+
+message CallVoipRequestBody {
+  repeated int64 callee_ids = 1;
+  optional string channel_id = 2;
+  optional VoipType v_type = 3;
+  map<string, string> ext = 4;
+  repeated int64 ref_channel_users = 5;
+  optional string con_id = 6;
+}
+
+message CallVoipResponseBody {
+  optional VoipInfo info = 1;
+  repeated int64 callee_ids = 2;
+  optional int32 status = 3;
+  optional string extra_info = 4;
+  optional int64 check_code = 5;
+  optional string check_message = 6;
+  optional string ref_channel_id = 7;
+  optional VoipMode voip_mode = 8;
+}
+
+message UpdateVoipRequestBody {
+  optional string channel_id = 1;
+  optional VoipStatus status = 2;
+  optional VoipType v_type = 3;
+}
+
+message UpdateVoipResponseBody {
+  optional VoipInfo info = 1;
+  optional VoipStatusCode status_code = 2;
+  optional VoipMode voip_mode = 3;
+  repeated int64 callees = 4;
+}
+
+message JoinVoipRequestBody {
+  optional int64 con_short_id = 1;
+  optional string channel_id = 2;
+}
+
+message JoinVoipResponseBody {
+  optional VoipInfo info = 1;
+  optional int32 status = 2;
+  optional int64 check_code = 3;
+  optional string check_message = 4;
+}
+
+message ChannelHeartBeatRequestBody {
+  optional string channel_id = 1;
+}
+
+message ChannelHeartBeatResponseBody {
+}
+
+message Profile {
+  optional string nick_name = 1;
+  optional string protrait = 2;
+  optional string basic_ext_info = 3;
+  optional string detail_ext_info = 4;
+  optional int64 uid = 5;
+}
+
+message ProfileGetInfoRequestBody {
+  required int64 userid = 1;
+  optional bool from_source = 2;
+}
+
+message ProfileGetInfoResponseBody {
+  optional Profile profile = 1;
+}
+
+message ClientMetric {
+  optional ClientMetricType metric_type = 1;
+  optional string k = 2;
+  optional int64 v = 3;
+  map<string, string> tags = 4;
+}
+
+message ReportClientMetricsRequestBody {
+  repeated ClientMetric report_metrics_list = 1;
+}
+
+message ReportClientMetricsResponseBody {
+}
+
+message ModifyMessageExtRequestBody {
+  required int64 conversation_short_id = 1;
+  required int64 message_id = 2;
+  required string ticket = 3;
+  map<string, string> ext = 4;
+}
+
+message ModifyMessageExtResponseBody {
+}
+
+message ConversationApplyInfo {
+  optional int64 user_id = 1;
+  optional int64 conv_short_id = 2;
+  optional int32 conversation_type = 3;
+  optional ApplyStatusCode apply_status = 4;
+  optional int64 apply_id = 5;
+  optional int64 create_time = 6;
+  optional int64 modify_time = 7;
+  optional int64 modify_user = 8;
+  optional string sec_uid = 9;
+  optional int64 invite_user_id = 10;
+  optional string sec_invite_uid = 11;
+  map<string, string> ext = 12;
+  optional string apply_reason = 13;
+}
+
+message GetConversationAuditSwitchRequestBody {
+  optional int64 conv_short_id = 1;
+  optional int32 conversation_type = 2;
+}
+
+message GetConversationAuditSwitchResponseBody {
+  optional bool switch_status = 1;
+}
+
+message UpdateConversationAuditSwitchRequestBody {
+  optional int64 conv_short_id = 1;
+  optional int32 conversation_type = 2;
+  optional bool switch_status = 3;
+}
+
+message UpdateConversationAuditSwitchResponseBody {
+  optional bool switch_status = 1;
+  optional int32 status = 2;
+  optional int64 check_code = 3;
+  optional string check_message = 4;
+}
+
+message SendConversationApplyRequestBody {
+  optional int64 conv_short_id = 1;
+  optional int32 conversation_type = 2;
+  map<string, string> bizExt = 3;
+  optional int64 invite_user_id = 4;
+  repeated int64 invited_user_ids = 5;
+  optional string apply_reason = 6;
+}
+
+message SendConversationApplyResponseBody {
+  optional int32 status = 1;
+  optional int64 check_code = 2;
+  optional string check_message = 3;
+}
+
+message AckConversationApplyRequestBody {
+  optional int64 apply_id = 1;
+  optional ApplyStatusCode apply_status = 2;
+  map<string, string> bizExt = 3;
+}
+
+message AckConversationApplyResponseBody {
+  optional ConversationApplyInfo apply_info = 1;
+  optional int32 status = 2;
+  optional int64 check_code = 3;
+  optional string check_message = 4;
+}
+
+message GetConversationApplyRequestBody {
+  optional int64 user_id = 1;
+  optional int64 conv_short_id = 2;
+  optional int32 conversation_type = 3;
+}
+
+message GetConversationApplyResponseBody {
+  optional ConversationApplyInfo apply_info = 1;
+}
+
+message GetConversationAuditListRequestBody {
+  optional int64 cursor = 1;
+  optional int32 limit = 2;
+  optional int64 conv_short_id = 3;
+  optional bool no_clear_unread = 4;
+}
+
+message GetConversationAuditListResponseBody {
+  repeated ConversationApplyInfo apply_info_list = 1;
+  optional int64 next_cursor = 2;
+  optional bool has_more = 3;
+}
+
+message GetConversationAuditUnreadRequestBody {
+}
+
+message GetConversationAuditUnreadResponseBody {
+  optional int64 unread_count = 1;
+  optional ConversationApplyInfo last_apply_info = 2;
+}
+
+message BatchGetConversationAuditUnreadRequestBody {
+  repeated int64 conv_short_id = 1;
+}
+
+message BatchGetConversationAuditUnreadResponseBody {
+  map<int64, int64> unread_count = 1;
+}
+
+message ClearConversationAuditUnreadRequestBody {
+  optional int64 conv_short_id = 1;
+}
+
+message ClearConversationAuditUnreadResponseBody {
+}
+
+message MessageInfo {
+  optional MessageStatus status = 1;
+  optional MessageBody body = 2;
+}
+
+message GetMessageInfoByIndexV2RequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  repeated int64 index_in_conversation_v2 = 4;
+}
+
+message GetMessageInfoByIndexV2ResponseBody {
+  map<int64, MessageInfo> infos = 1;
+}
+
+message GetMessageByIdRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  optional int64 server_message_id = 4;
+}
+
+message GetMessageByIdResponseBody {
+  optional MessageInfo msg_info = 1;
+}
+
+message PreviewerMessagesInConversationRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  optional MessageDirection direction = 4;
+  optional int64 anchor_index = 5;
+  optional int32 limit = 6 [default = 50];
+}
+
+message PreviewerMessagesInConversationResponseBody {
+  repeated MessageBody messages = 1;
+  optional int64 next_cursor = 2;
+  optional bool has_more = 3;
+  optional int32 status = 4;
+  optional int64 check_code = 5;
+  optional string check_message = 6;
+}
+
+message ConversationRecentMessage {
+  required int64 conversation_short_id = 1;
+  repeated MessageBody messages = 2;
+  required int64 version = 3;
+  optional int32 badge_count = 4;
+  required string conversation_id = 5;
+  repeated MessageBody ext_messages = 6;
+  optional StrangerInfo stranger_info = 8;
+  repeated MuteBadgeCountInfo mute_badge_count_infos = 9;
+  repeated HintInfo hint_infos = 10;
+}
+
+message StrangerInfo {
+  repeated Participant participants = 1;
+  map<string, string> ext = 2;
+  repeated ConversationReadInfo read_info = 3;
+}
+
+message ConversationReadInfo {
+  required int64 read_index = 1;
+  required int64 read_badge_count = 2;
+  required int64 read_index_v2 = 3;
+  required int64 ConversationShortId = 4;
+  optional string ConversationId = 5;
+}
+
+message HintInfo {
+  optional int32 hint_type = 1;
+  optional string hint_string = 2;
+  optional int64 end_time = 3;
+}
+
+message GetRecentMessageReqBody {
+  required int64 conversation_version = 1;
+  required string source = 2;
+  optional int32 new_user = 3;
+}
+
+message GetCmdMessageReqBody {
+  required int64 cmd_index = 1;
+  required string source = 2;
+  optional int32 new_user = 3;
+}
+
+message GetRecentMessageRespBody {
+  required int64 next_conversation_version = 1;
+  repeated ConversationRecentMessage messages = 2;
+  required bool has_more = 3;
+}
+
+message GetCmdMessageRespBody {
+  repeated MessageBody messages = 1;
+  required bool has_more = 2;
+  optional int64 next_cmd_index = 3;
+  optional int64 next_user_message_cursor = 4;
+  optional int64 readconv_version = 5;
+}
+
+message GetMessageInfoByIndexV2RangeRequestBody {
+  optional string conversation_id = 1;
+  optional int32 conversation_type = 2;
+  optional int64 conversation_short_id = 3;
+  required int64 min_index_in_conversation_v2 = 4;
+  required int64 max_index_in_conversation_v2 = 5;
+  optional MessageDirection direction = 6;
+}
+
+message GetMessageInfoByIndexV2RangeResponseBody {
+  repeated MessageInfo infos = 1;
+  optional int64 next_index_in_conversation_v2 = 2;
+  optional bool has_more = 3;
+}
+
+message MessageByInitRequestBody {
+  optional int64 version = 1;
+  optional int32 page = 2;
+}
+
+message MessageByInitResponseBody {
+  repeated ConversationMessage messages = 1;
+  required bool has_more = 2;
+  required int64 next_init_version = 3;
+  optional int64 version = 4;
+  optional int64 user_cursor = 5;
+  optional int64 cmd_index = 6;
+  optional int64 readconv_version = 7;
+}
+
+message ConversationMessage {
+  required ConversationInfoV2 conversations = 1;
+  repeated MessageBody messages = 2;
+}
+
+message GetUserMessageRequestBody {
+  optional int64 version = 1;
+  optional int64 cmd_index = 2;
+  optional int64 stranger_version = 3;
+  optional int64 read_version = 4;
+  required string source = 5;
+  optional int64 consult_version = 6;
+}
+
+message GetUserMessageResponseBody {
+  optional GetRecentMessageRespBody messages = 1;
+  optional GetCmdMessageRespBody cmd_messages = 2;
+  optional bool has_stranger_message = 3;
+  optional ConversationReadInfoRespBody read_info = 4;
+  optional ConsultGetConversationListResponseBody consult_messages = 5;
+}
+
+message ConversationReadInfoRespBody {
+  repeated ConversationReadInfo read_info = 1;
+  required bool has_more = 2;
+  required int64 next_version = 3;
+}
+
+message ConsultGetConversationListResponseBody {
+  required int64 next_version = 1;
+  repeated ConversationRecentMessage messages = 2;
+  required bool has_more = 3;
+  required int32 inbox_type = 4;
+}
+
+message GetRecentStrangerMessageReqBody {
+  optional int64 latest_stranger_version = 1;
+  required int64 earliest_stranger_version = 2;
+  required string source = 3;
+  optional int32 new_user = 4;
+  map<string, string> ext = 5;
+  optional string biz_info = 6;
+}
+
+message GetRecentStrangerMessageRespBody {
+  required int64 next_stranger_version = 1;
+  repeated ConversationRecentMessage messages = 2;
+  required bool has_more = 3;
+}
+
+message SendFriendApplyRequestBody {
+  required int64 user_id = 1;
+  map<string, string> ext = 2;
+}
+
+message SendFriendApplyResponseBody {
+  optional int32 status = 1;
+  optional int64 check_code = 2;
+  optional string check_message = 3;
+}
+
+message GetFriendApplyListRequestBody {
+  optional int64 cursor = 1;
+  optional int64 limit = 2;
+  optional bool get_total_count = 3;
+  optional int32 status = 4;
+}
+
+message ApplyUserInfo {
+  optional int64 user_id = 1;
+  optional int64 apply_time_second = 2;
+  map<string, string> ext = 3;
+  optional int32 status = 4;
+  optional Profile profile = 5;
+}
+
+message GetFriendApplyListResponseBody {
+  optional int64 next_cursor = 1;
+  optional bool has_more = 2;
+  repeated ApplyUserInfo user_list = 3;
+  optional int64 total_count = 4;
+}
+
+message GetFriendReceiveApplyListRequestBody {
+  optional int64 cursor = 1;
+  optional int64 limit = 2;
+  optional bool get_total_count = 3;
+  optional int32 status = 4;
+}
+
+message GetFriendReceiveApplyListResponseBody {
+  optional int64 next_cursor = 1;
+  optional bool has_more = 2;
+  repeated ApplyUserInfo user_list = 3;
+  optional int64 total_count = 4;
+}
+
+message ReplyFriendApplyRequestBody {
+  repeated int64 user_id = 1;
+  optional int32 attitude = 2;
+  map<string, string> ext = 3;
+}
+
+message ReplyFriendApplyResponseBody {
+}
+
+message FriendUserInfo {
+  optional int64 user_id = 1;
+  optional int64 apply_time_second = 2;
+  map<string, string> ext = 3;
+  optional Profile profile = 4;
+}
+
+message GetFriendListRequestBody {
+  optional int64 cursor = 1;
+  optional int64 limit = 2;
+  optional bool get_total_count = 3;
+}
+
+message GetFriendListResponseBody {
+  optional int64 next_cursor = 1;
+  optional bool has_more = 2;
+  repeated FriendUserInfo user_list = 3;
+  optional int64 total_count = 4;
+}
+
+message DeleteFriendRequestBody {
+  repeated int64 user_id = 1;
+}
+
+message DeleteFriendResponseBody {
+}
+
+message ProfileBatchGetInfoRequestBody {
+  repeated int64 userids = 1;
+}
+
+message ProfileBatchGetInfoResponseBody {
+  repeated Profile profiles = 1;
+}
+
+message ProfileSearchInfoRequestBody {
+  required string search_key = 1;
+}
+
+message ProfileSearchInfoResponseBody {
+  repeated Profile profile = 1;
+}
+
+message GlobalMessageSearchRequestBody {
+  required string search_query = 1;
+  optional int64 start_time = 2;
+  optional int64 end_time = 3;
+  optional int32 frag_size = 4;
+  optional string scroll_id = 5;
+}
+
+message GlobalMessageSearchResponseBody {
+  repeated ConversationCoreInfo conv_result = 1;
+  repeated MessageBody message_result = 2;
+  required bool has_more = 3;
+  required string scroll_id = 4;
+}
+
+message ConversationCoreSearchQuery {
+  optional int64 conv_short_id = 1;
+  optional string conv_name = 2;
+  optional string conv_status = 3;
+  optional int64 creat_start_time = 4;
+  optional int64 creat_end_time = 5;
+  optional int64 owner_id = 6;
+  repeated string ext_list = 7;
+}
+
+message ConversationCoreSearchRequestBody {
+  required ConversationCoreSearchQuery search_query = 1;
+  optional int32 frag_size = 2;
+  optional string scroll_id = 3;
+}
+
+message ConversationCoreSearchResponseBody {
+  repeated ConversationCoreInfo conversations = 1;
+  required bool has_more = 2;
+  required string scroll_id = 3;
+  optional int64 total_count = 4;
+}
+
+message ConversationMessageSearchRequestBody {
+  required string search_query = 1;
+  required int64 conv_short_id = 2;
+  optional int64 start_time = 3;
+  optional int64 end_time = 4;
+  optional int32 frag_size = 5;
+  optional string scroll_id = 6;
+}
+
+message ConversationMessageSearchResponseBody {
+  repeated MessageBody message_result = 1;
+  required bool has_more = 2;
+  required string scroll_id = 3;
+}
+
+message ConversationMessagePreViewRequestBody {
+  required int64 conv_short_id = 1;
+  required int64 message_id = 2;
+  required int64 conversation_index = 3;
+  required int32 inbox_type = 4;
+}
+
+message ConversationMessagePreViewResponseBody {
+  repeated MessageBody message_result = 1;
+}
+
+message GetConversationsCheckInfoV2RequestBody {
+  optional int64 version = 1;
+  required int32 page = 2;
+}
+
+message RequestBody {
+  optional SendMessageRequestBody send_message_body = 100;
+  optional MessagesPerUserRequestBody messages_per_user_body = 200;
+  optional MessagesPerUserInitRequestBody messages_per_user_init_body = 201;
+  optional MessagesPerUserInitV2RequestBody messages_per_user_init_v2_body = 203;
+  optional CheckMessagePerUserRequestBody check_messages_per_user_body = 210;
+  optional GetMessageByIdRequestBody get_message_by_id_body = 211;
+  optional ConversationsListRequestBody conversations_list_body = 300;
+  optional MessagesInConversationRequestBody messages_in_conversation_body = 301;
+  optional GetMessagesCheckInfoInConversationRequestBody get_messages_checkinfo_in_conversation_body = 302;
+  optional SendUserActionRequestBody send_user_action_body = 410;
+  optional SendInputStatusRequestBody send_input_status_body = 411;
+  optional GetConversationInfoRequestBody get_conversation_info_body = 600;
+  optional SetConversationInfoRequestBody set_conversation_info_body = 601;
+  optional CreateConversationRequestBody create_conversation_body = 602;
+  optional DeleteConversationRequestBody delete_conversation_body = 603;
+  optional MarkConversationReadRequestBody mark_conversation_read_body = 604;
+  optional ConversationParticipantsListRequestBody conversation_participants_body = 605;
+  optional GetConversationInfoListRequestBody get_conversation_info_list_body = 607;
+  optional ReportGetMessagesCursorRequestBody report_conversation_cursor_body = 606;
+  optional BatchMarkConversationReadRequestBody batch_mark_read_body = 613;
+  optional DissolveConversationRequestBody dissolve_conversation_body = 614;
+  optional GetConversationsCheckInfoRequestBody get_conversations_checkinfo_body = 615;
+  optional GetConversationInfoV2RequestBody get_conversation_info_v2_body = 608;
+  optional CreateConversationV2RequestBody create_conversation_v2_body = 609;
+  optional GetConversationInfoListV2RequestBody get_conversation_info_list_v2_body = 610;
+  optional ConversationsPerUserByFavoriteV2RequestBody get_conversation_info_list_by_favorite_v2_body = 611;
+  optional ConversationsPerUserByTopV2RequestBody get_conversation_info_list_by_top_v2_body = 612;
+  optional ConversationAddParticipantsRequestBody conversation_add_participants_body = 650;
+  optional ConversationRemoveParticipantsRequestBody conversation_remove_participants_body = 651;
+  optional ConversationLeaveRequestBody leave_conversation_body = 652;
+  optional ConversationSetRoleRequestBody conversation_set_role_body = 653;
+  optional MgetConversationParticipantsRequestBody mget_conversation_participants_body = 654;
+  optional UpdateConversationParticipantRequestBody update_conversation_participant_body = 655;
+  optional BatchUpdateConversationParticipantRequestBody batch_update_conversation_participant_body = 656;
+  optional DeleteMessageRequestBody delete_message_body = 701;
+  optional RecallMessageRequestBody recall_message_body = 702;
+  optional ReactionMessageRequestBody reaction_message_body = 703;
+  optional SyncMessageRequestBody sync_message_body = 704;
+  optional ModifyMessagePropertyRequestBody modify_message_property_body = 705;
+  optional GetGroupInfoRequestBody get_group_info_body = 801;
+  optional SetGroupInfoRequestBody set_group_info_body = 802;
+  optional GetGroupInfoListRequestBody get_group_info_list_body = 803;
+  optional GetConversationCoreInfoRequestBody get_conversation_core_info_body = 901;
+  optional SetConversationCoreInfoRequestBody set_conversation_core_info_body = 902;
+  optional GetConversationCoreInfoListRequestBody get_conversation_core_info_list_body = 903;
+  optional UpsertConversationCoreExtInfoRequestBody upsert_conversation_core_ext_info_body = 904;
+  optional DeleteConversationCoreExtInfoRequestBody delete_conversation_core_ext_info_body = 905;
+  optional GetConversationSettingInfoRequestBody get_conversation_setting_info_body = 920;
+  optional SetConversationSettingInfoRequestBody set_conversation_setting_info_body = 921;
+  optional UpsertConversationSettingExtInfoRequestBody upsert_conversation_setting_ext_info_body = 922;
+  optional DeleteConversationSettingExtInfoRequestBody delete_conversation_setting_ext_info_body = 923;
+  optional GetStrangerConversationListRequestBody get_stranger_conversation_body = 1000;
+  optional GetStrangerMessagesRequestBody get_stranger_messages_body = 1001;
+  optional DeleteStrangerMessageRequestBody delete_stranger_message_body = 1002;
+  optional DeleteStrangerConversationRequestBody delete_stranger_conversation_body = 1003;
+  optional DeleteStrangerAllConversationRequestBody delete_stranger_all_conversation_body = 1004;
+  optional MarkStrangerConversationReadRequestBody mark_stranger_conversation_read_body = 1005;
+  optional MarkStrangerAllConversationReadRequestBody mark_stranger_all_conversation_read_body = 1006;
+  optional GetStrangerUnreadCountRequestBody get_stranger_unread_count_body = 1007;
+  optional GetConversationParticipantsReadIndexV3RequestBody participants_read_index_body = 2000;
+  optional GetConversationParticipantsMinIndexV3RequestBody participants_min_index_body = 2001;
+  optional GetUploadTokenRequestBody get_upload_token_body = 2003;
+  optional GetMediaUrlsRequestBody get_media_urls_body = 2004;
+  optional GetTicketRequestBody get_ticket_body = 2005;
+  optional VcdCleanRequestBody vcd_clean_body = 9999;
+  optional GetUserConversationListRequestBody get_conversation_list_body = 2006;
+  optional BroadcastSendMessageRequestBody broadcast_send_message_body = 2007;
+  optional BroadcastRecvMessageRequestBody broadcast_recv_message_body = 2008;
+  optional BroadcastUserCounterRequestBody broadcast_user_counter_body = 2009;
+  optional ClientACKRequestBody client_ack_body = 2010;
+  optional CreateVoipRequestBody create_voip_body = 2011;
+  optional CallVoipRequestBody call_voip_body = 2012;
+  optional UpdateVoipRequestBody update_voip_body = 2013;
+  optional ChannelHeartBeatRequestBody channel_heartbeat_body = 2014;
+  optional ProfileGetInfoRequestBody profile_get_info = 2015;
+  optional ReportClientMetricsRequestBody report_client_metrics_body = 2016;
+  optional GetConfigsRequestBody get_configs_body = 2017;
+  optional UnReadCountReportRequestBody unread_count_report_body = 2018;
+  optional BlockMembersRequestBody block_members_body = 2019;
+  optional BlockConversationRequestBody block_conversation_body = 2020;
+  optional ModifyMessageExtRequestBody modify_message_ext_body = 2021;
+  optional GetConversationAuditSwitchRequestBody get_conversation_audit_switch_body = 2022;
+  optional UpdateConversationAuditSwitchRequestBody update_conversation_audit_switch_body = 2023;
+  optional SendConversationApplyRequestBody send_conversation_apply_body = 2024;
+  optional AckConversationApplyRequestBody ack_conversation_apply_body = 2025;
+  optional GetConversationApplyRequestBody get_conversation_apply_body = 2026;
+  optional GetConversationAuditListRequestBody get_conversation_audit_list_body = 2027;
+  optional GetConversationAuditUnreadRequestBody get_conversation_audit_unread_body = 2028;
+  optional ClearConversationAuditUnreadRequestBody clear_conversation_audit_unread_body = 2029;
+  optional GetUnreadCountRequestBody get_unread_count_body = 2030;
+  optional SendMessageP2PRequestBody send_message_p2p_body = 2031;
+  optional GetBlockListRequestBody get_blocklist_body = 2032;
+  optional SetBlocklistRequestBody set_blocklist_body = 2033;
+  optional CheckInBlockListRequestBody check_in_blocklist_body = 2034;
+  optional GetMessageInfoByIndexV2RequestBody get_message_info_by_index_v2_body = 2035;
+  optional MarkMessageRequestBody mark_message_body = 2036;
+  optional PullMarkMessageRequestBody pull_mark_message_body = 2037;
+  optional BatchGetConversationParticipantsReadIndexRequestBody batch_get_conversation_participants_readindex = 2038;
+  optional GetRecentMessageReqBody get_recent_message_body = 2039;
+  optional GetCmdMessageReqBody get_cmd_message_body = 2040;
+  optional GetMessageInfoByIndexV2RangeRequestBody get_message_info_by_index_v2_range_body = 2041;
+  optional BatchGetConversationAuditUnreadRequestBody batch_get_conversation_audit_unread = 2042;
+  optional MessageByInitRequestBody message_by_init = 2043;
+  optional GetConversationsCheckInfoV2RequestBody get_conversations_checkinfo_v2 = 2046;
+  optional GetUserMessageRequestBody get_user_message = 2048;
+  optional PreviewerMessagesInConversationRequestBody previewer_messages_in_conversation_body = 2044;
+  optional PreviewerGetConversationInfoListRequestBody previewer_get_conversation_info_list_body = 2045;
+  optional GetRecentStrangerMessageReqBody get_recent_stranger_message = 2047;
+  optional GetFriendApplyListRequestBody get_friend_apply_list_body = 20471;
+  optional GetFriendReceiveApplyListRequestBody get_friend_receive_apply_list_body = 20481;
+  optional ReplyFriendApplyRequestBody reply_friend_apply_body = 2049;
+  optional GetFriendListRequestBody get_friend_list_body = 2050;
+  optional DeleteFriendRequestBody delete_friend_body = 2051;
+  optional ProfileBatchGetInfoRequestBody profile_batch_get_info_body = 2052;
+  optional ProfileSearchInfoRequestBody profile_search_info_body = 2053;
+  optional MarkMsgUnreadCountReportRequestBody mark_msg_unread_count_report = 2054;
+  optional MarkMsgGetUnreadCountRequestBody mark_msg_get_unread_count = 2055;
+  optional BatchUnmarkMessageRequestBody batch_unmark_message = 2056;
+  optional ClientBatchACKRequestBody client_batch_ack_body = 2057;
+  optional JoinVoipRequestBody join_voip_body = 2058;
+  optional GlobalMessageSearchRequestBody global_message_search_body = 2100;
+  optional ConversationCoreSearchRequestBody conversation_core_search_body = 2101;
+  optional ConversationMessageSearchRequestBody conversation_message_search_body = 2102;
+  optional ConversationMessagePreViewRequestBody conversation_message_pre_view_body = 2103;
+}
+
+message Request {
+  optional int32 cmd = 1;
+  optional int64 sequence_id = 2;
+  optional string sdk_version = 3;
+  optional string token = 4;
+  optional Refer refer = 5;
+  optional int32 inbox_type = 6;
+  optional string build_number = 7;
+  optional RequestBody body = 8;
+  optional string device_id = 9;
+  optional string channel = 10;
+  optional string device_platform = 11;
+  optional string device_type = 12;
+  optional string os_version = 13;
+  optional string version_code = 14;
+  map<string, string> headers = 15;
+  optional int32 config_id = 16;
+  optional TokenInfo token_info = 17;
+  optional AuthType auth_type = 18;
+  optional MsgTrace msg_trace = 19;
+  optional int32 retry_count = 20;
+  optional string biz = 21;
+  optional string access = 22;
+}
+
+message TokenInfo {
+  optional int32 mark_id = 1;
+  optional TokenType type = 2;
+  optional int32 app_id = 3;
+  optional int64 user_id = 4;
+  optional int64 timestamp = 5;
+}
+
+message GetConversationsCheckInfoV2RespBody {
+  repeated ConversationCheckInfo conversation_checkinfo_list = 1;
+  required bool has_more = 2;
+  required int64 next_version = 3;
+}
+
+message ResponseBody {
+  optional SendMessageResponseBody send_message_body = 100;
+  optional MessagesPerUserResponseBody messages_per_user_body = 200;
+  optional MessagesPerUserInitResponseBody messages_per_user_init_body = 201;
+  optional MessagesPerUserInitV2ResponseBody messages_per_user_init_v2_body = 203;
+  optional CheckMessagesPerUserResponseBody check_messages_per_user_body = 210;
+  optional GetMessageByIdResponseBody get_message_by_id_body = 211;
+  optional ConversationsListResponseBody conversations_list_body = 300;
+  optional MessagesInConversationResponseBody messages_in_conversation_body = 301;
+  optional GetMessagesCheckInfoInConversationResponseBody get_messages_checkinfo_in_conversation_body = 302;
+  optional SendUserActionResponseBody send_user_action_body = 410;
+  optional NewMessageNotify has_new_message_notify = 500;
+  optional MarkConversationReadNotify mark_conversation_read_notify = 501;
+  optional ConversationInfoUpdatedNotify conversation_info_updated_notify = 502;
+  optional StrangerNewMessageNotify stranger_has_new_message_notify = 503;
+  optional NewP2PMessageNotify has_new_p2p_message_notify = 504;
+  optional NewFriendMessageNotify new_friend_message_notify = 507;
+  optional GetConversationInfoResponseBody get_conversation_info_body = 600;
+  optional SetConversationInfoResponseBody set_conversation_info_body = 601;
+  optional CreateConversationResponseBody create_conversation_body = 602;
+  optional GetConversationInfoListResponseBody get_conversations_info_list_body = 607;
+  optional BatchMarkConversationReadResponseBody batch_mark_read_body = 613;
+  optional GetConversationsCheckInfoResponseBody get_conversations_checkinfo_body = 615;
+  optional GetConversationInfoV2ResponseBody get_conversation_info_v2_body = 608;
+  optional CreateConversationV2ResponseBody create_conversation_v2_body = 609;
+  optional GetConversationInfoListV2ResponseBody get_conversation_info_list_v2_body = 610;
+  optional GetConversationInfoListByFavoriteV2ResponseBody get_conversation_info_list_by_favorite_v2_body = 611;
+  optional GetConversationInfoListByTopV2ResponseBody get_conversation_info_list_by_top_v2_body = 612;
+  optional ConversationParticipantsListResponseBody conversation_participants_body = 605;
+  optional ConversationAddParticipantsResponseBody conversation_add_participants_body = 650;
+  optional ConversationRemoveParticipantsResponseBody conversation_remove_participants_body = 651;
+  optional ConversationSetRoleResponseBody conversation_set_role_body = 653;
+  optional MgetConversationParticipantsResponseBody mget_conversation_participants_body = 654;
+  optional UpdateConversationParticipantResponseBody update_conversation_participant_body = 655;
+  optional BatchUpdateConversationParticipantResponseBody batch_update_conversation_participant_body = 656;
+  optional RecallMessageResponseBody recall_message_body = 702;
+  optional ReactionMessageResponseBody reaction_message_body = 703;
+  optional SyncMessageResponseBody sync_message_body = 704;
+  optional ModifyMessagePropertyResponseBody modify_message_property_body = 705;
+  optional GetGroupInfoResponseBody get_group_info_body = 801;
+  optional SetGroupInfoResponseBody set_group_info_body = 802;
+  optional GetGroupInfoListResponseBody get_groups_info_body = 803;
+  optional GetConversationCoreInfoResponseBody get_conversation_core_info_body = 901;
+  optional SetConversationCoreInfoResponseBody set_conversation_core_info_body = 902;
+  optional GetConversationCoreInfoListResponseBody get_conversation_core_info_list_body = 903;
+  optional UpsertConversationCoreExtInfoResponseBody upsert_conversation_core_ext_info_body = 904;
+  optional DeleteConversationCoreExtInfoResponseBody delete_conversation_core_ext_info_body = 905;
+  optional GetConversationSettingInfoResponseBody get_conversation_setting_info_body = 920;
+  optional SetConversationSettingInfoResponseBody set_conversation_setting_info_body = 921;
+  optional UpsertConversationSettingExtInfoResponseBody upsert_conversation_setting_ext_info_body = 922;
+  optional DeleteConversationSettingExtInfoResponseBody delete_conversation_setting_ext_info_body = 923;
+  optional GetStrangerConversationListResponseBody get_stranger_conversation_body = 1000;
+  optional GetStrangerMessagesResponseBody get_stranger_messages_body = 1001;
+  optional DeleteStrangerMessageResponseBody delete_stranger_message_body = 1002;
+  optional DeleteStrangerConversationResponseBody delete_stranger_conversation_body = 1003;
+  optional DeleteStrangerAllConversationResponseBody delete_stranger_all_conversation_body = 1004;
+  optional MarkStrangerConversationReadResponseBody mark_stranger_conversation_read_body = 1005;
+  optional MarkStrangerAllConversationReadResponseBody mark_stranger_all_conversation_read_body = 1006;
+  optional GetStrangerUnreadCountResponseBody get_stranger_unread_count_body = 1007;
+  optional GetConversationParticipantsReadIndexV3ResponseBody participants_read_index_body = 2000;
+  optional GetConversationParticipantsMinIndexV3ResponseBody participants_min_index_body = 2001;
+  optional GetUploadTokenResponseBody get_upload_token_body = 2003;
+  optional GetMediaUrlsResponseBody get_media_urls_body = 2004;
+  optional GetTicketResponseBody get_ticket_body = 2005;
+  optional VcdCleanResponseBody vcd_clean_body = 9999;
+  optional GetUserConversationListResponseBody get_conversation_list_body = 2006;
+  optional BroadcastSendMessageResponseBody broadcast_send_message_body = 2007;
+  optional BroadcastRecvMessageResponseBody broadcast_recv_message_body = 2008;
+  optional BroadcastUserCounterResponseBody broadcast_user_counter_body = 2009;
+  optional ClientACKResponseBody client_ack_body = 2010;
+  optional CreateVoipResponseBody create_voip_body = 2011;
+  optional CallVoipResponseBody call_voip_body = 2012;
+  optional UpdateVoipResponseBody update_voip_body = 2013;
+  optional ChannelHeartBeatResponseBody channel_heartbeat_body = 2014;
+  optional ProfileGetInfoResponseBody profile_get_info = 2015;
+  optional ReportClientMetricsResponseBody report_client_metrics_body = 2016;
+  optional GetConfigsResponseBody get_configs_body = 2017;
+  optional UnReadCountReportResponseBody unread_count_report_body = 2018;
+  optional BlockMembersResponseBody block_members_body = 2019;
+  optional BlockConversationResponseBody block_conversation_body = 2020;
+  optional ModifyMessageExtResponseBody modify_message_ext_body = 2021;
+  optional GetConversationAuditSwitchResponseBody get_conversation_audit_switch_body = 2022;
+  optional UpdateConversationAuditSwitchResponseBody update_conversation_audit_switch_body = 2023;
+  optional SendConversationApplyResponseBody send_conversation_apply_body = 2024;
+  optional AckConversationApplyResponseBody ack_conversation_apply_body = 2025;
+  optional GetConversationApplyResponseBody get_conversation_apply_body = 2026;
+  optional GetConversationAuditListResponseBody get_conversation_audit_list_body = 2027;
+  optional GetConversationAuditUnreadResponseBody get_conversation_audit_unread_body = 2028;
+  optional ClearConversationAuditUnreadResponseBody clear_conversation_audit_unread_body = 2029;
+  optional GetUnreadCountResponseBody get_unread_count_body = 2030;
+  optional SendMessageP2PResponseBody send_message_p2p_body = 2031;
+  optional GetBlockListResponseBody get_blocklist_body = 2032;
+  optional SetBlocklistResponseBody set_blocklist_body = 2033;
+  optional CheckInBlockListResponseBody check_in_blocklist_body = 2034;
+  optional GetMessageInfoByIndexV2ResponseBody get_message_info_by_index_v2_body = 2035;
+  optional MarkMessageResponseBody mark_message_body = 2036;
+  optional PullMarkMessageResponseBody pull_mark_message_body = 2037;
+  optional BatchGetConversationParticipantsReadIndexResponseBody batch_get_conversation_participants_readindex = 2038;
+  optional GetRecentMessageRespBody get_recent_message_body = 2039;
+  optional GetCmdMessageRespBody get_cmd_message_body = 2040;
+  optional GetMessageInfoByIndexV2RangeResponseBody get_message_info_by_index_v2_range_body = 2041;
+  optional BatchGetConversationAuditUnreadResponseBody batch_get_conversation_audit_unread_body = 2042;
+  optional MessageByInitResponseBody message_by_init = 2043;
+  optional GetUserMessageResponseBody get_user_message = 2048;
+  optional PreviewerMessagesInConversationResponseBody previewer_messages_in_conversation_body = 2044;
+  optional PreviewerGetConversationInfoListResponseBody previewer_get_conversation_info_list_body = 2045;
+  optional GetRecentStrangerMessageRespBody get_recent_stranger_message = 2047;
+  optional GetConversationsCheckInfoV2RespBody get_conversations_checkinfo_v2 = 2046;
+  optional GetFriendApplyListResponseBody get_friend_apply_list_body = 20471;
+  optional GetFriendReceiveApplyListResponseBody get_friend_receive_apply_list_body = 20481;
+  optional ReplyFriendApplyResponseBody reply_friend_apply_body = 2049;
+  optional GetFriendListResponseBody get_friend_list_body = 2050;
+  optional DeleteFriendResponseBody delete_friend_body = 2051;
+  optional ProfileBatchGetInfoResponseBody profile_batch_get_info_body = 2052;
+  optional ProfileSearchInfoResponseBody profile_search_info_body = 2053;
+  optional MarkMsgUnreadCountReportResponseBody mark_msg_unread_count_report = 2054;
+  optional MarkMsgGetUnreadCountResponseBody mark_msg_get_unread_count = 2055;
+  optional BatchUnmarkMessageResponseBody batch_unmark_message = 2056;
+  optional ClientBatchACKResponseBody client_batch_ack_body = 2057;
+  optional JoinVoipResponseBody join_voip_body = 2058;
+  optional GlobalMessageSearchResponseBody global_message_search_body = 2100;
+  optional ConversationCoreSearchResponseBody conversation_core_search_body = 2101;
+  optional ConversationMessageSearchResponseBody conversation_message_search_body = 2102;
+  optional ConversationMessagePreViewResponseBody conversation_message_pre_view_body = 2103;
+}
+
+message Response {
+  optional int32 cmd = 1;
+  optional int64 sequence_id = 2;
+  optional int32 status_code = 3;
+  optional string error_desc = 4;
+  optional int32 inbox_type = 5;
+  optional ResponseBody body = 6;
+  optional string log_id = 7;
+  map<string, string> headers = 8;
+  optional int64 start_time_stamp = 9;
+  optional int64 request_arrived_time = 10;
+  optional int64 server_execution_end_time = 11;
+  optional int32 retry_count = 12;
+}

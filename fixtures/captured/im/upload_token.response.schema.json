@@ -1,0 +1,48 @@
+{
+  "$comment": "脱敏结构说明。真值含 STS 密钥，见 .scratch/im/upload-token.response.network-response",
+  "endpoint": "GET https://summon.bytedance.com/api/v1/resource/upload/token?uploadTerminal=1",
+  "response": {
+    "code": 200,
+    "message": "success",
+    "statusCode": 0,
+    "data": {
+      "accessToken": "<encrypted-string>",
+      "uploadToken": {
+        "_note": "uploadToken 字段本身是 JSON 字符串，需 JSON.parse 两次",
+        "video": {
+          "token": "{ \"AccessKeyID\": \"...\", \"SecretAccessKey\": \"...\", \"SessionToken\": \"...\", \"ExpiredTime\": \"...\" }",
+          "extra": {
+            "spaceName": "csp-bytehi-security",
+            "region": "cn",
+            "videoHost": "https://vod.bytedanceapi.com",
+            "imageHost": "https://imagex.bytedanceapi.com",
+            "imageFallbackHost": "https://open.bytedanceapi.com",
+            "appID": "343272"
+          }
+        },
+        "other": "<opaque>",
+        "imagex_token": {
+          "service_id": "3s21f99x60",
+          "image_domain": "",
+          "image_ak": "<STS_AK>",
+          "image_sk": "<STS_SK>",
+          "image_token": "<STS_SESSION_TOKEN>"
+        }
+      }
+    }
+  },
+  "uploadFlow": {
+    "sdk": "lib-byted-uploader (imagex)",
+    "steps": [
+      "ApplyImageUpload Version=2018-08-01 ServiceId=<service_id>",
+      "PUT <UploadHost> with Auth from StoreInfos",
+      "CommitImageUpload SessionKey=<from Apply>"
+    ]
+  },
+  "imMessage": {
+    "endpoint": "POST https://imapi.snssdk.com/v1/message/send",
+    "messageTypeCandidates": [2, 10003],
+    "textMessageTypeInSdk": 7,
+    "cdnHostExample": "p3-aweme-im-img.byteimg.com/tos-cn-i-7lppr0tkux/..."
+  }
+}

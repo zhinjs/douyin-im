@@ -1,0 +1,73 @@
+{
+  "getToken": {
+    "method": "GET",
+    "path": "/aweme/v1/creator/im/user_token/v2/",
+    "params": {
+      "aid": "2906",
+      "app_name": "aweme_creator_platform",
+      "device_platform": "web",
+      "certificate": "<base64 bd_ticket_guard CSR - optional>",
+      "msToken": "<required>",
+      "a_bogus": "<computed>"
+    },
+    "headers": {
+      "x-secsdk-csrf-token": "<csrf_token>",
+      "agw-js-conv": "str"
+    },
+    "response": {
+      "extra": { "now": 1779756813000 },
+      "sdk_cert": "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----\n",
+      "status_code": 0,
+      "status_msg": "",
+      "token": "<im_token ~80 chars>",
+      "ts_sign": "<~700 chars base64-like string>",
+      "user_id": "<uid string>"
+    },
+    "notes": "v2 版本返回 token + ts_sign + sdk_cert，这三个字段组成 imapi 的鉴权三要素"
+  },
+  "getTokenV1": {
+    "method": "GET",
+    "path": "/aweme/v1/creator/im/user_token/",
+    "params": {
+      "aid": "2906",
+      "app_name": "aweme_creator_platform",
+      "device_platform": "web",
+      "msToken": "<required>",
+      "a_bogus": "<computed>"
+    },
+    "notes": "旧版本，只返回 token 和 user_id"
+  },
+  "listThreads": {
+    "method": "POST",
+    "host": "imapi.snssdk.com",
+    "path": "/v2/message/get_by_user_init",
+    "content_type": "application/x-protobuf",
+    "accept": "application/x-protobuf",
+    "body_format": "protobuf",
+    "body_contains": {
+      "version": "0.7.5",
+      "token": "<from getToken>",
+      "ts_sign": "<from getToken>",
+      "sdk_cert": "<base64 certificate>",
+      "app_name": "douyin_creator",
+      "aid": "2906"
+    },
+    "response_format": "protobuf (binary)",
+    "notes": "请求和响应都使用 protobuf 编码。需要逆向 protobuf schema 才能完整解析。"
+  },
+  "listStrangerThreads": {
+    "method": "POST",
+    "host": "imapi.snssdk.com",
+    "path": "/v1/stranger/get_conversation_list",
+    "content_type": "application/x-protobuf",
+    "body_format": "protobuf",
+    "notes": "陌生人私信会话列表，格式同 listThreads"
+  },
+  "architecture_notes": [
+    "IM 使用 protobuf 而非 JSON 通信",
+    "鉴权三要素：token + ts_sign + sdk_cert（均来自 user_token/v2 响应）",
+    "token 每次调用 user_token/v2 会刷新",
+    "完整实现需要：1) 逆向 protobuf schema 2) 实现 protobuf 序列化/反序列化",
+    "browser 端由 JS SDK (版本 0.7.5) 处理 protobuf 编解码"
+  ]
+}

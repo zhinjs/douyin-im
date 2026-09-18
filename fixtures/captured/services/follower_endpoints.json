@@ -1,0 +1,34 @@
+{
+  "list": {
+    "method": "GET",
+    "path": "/web/api/creator/data/fans/list",
+    "params": {
+      "cursor": "0",
+      "count": "20",
+      "msToken": "<optional>"
+    },
+    "response": {
+      "status_code": 0,
+      "status_msg": "",
+      "fans_list": [],
+      "has_more": false
+    },
+    "notes": "需要账号有粉丝数据才有返回"
+  },
+  "stats": {
+    "method": "GET",
+    "path": "/web/api/creator/center/fans/index/config",
+    "params": {
+      "aid": "1128",
+      "msToken": "<optional>"
+    },
+    "response": {
+      "base_resp": { "extra": {}, "status_code": 0, "status_message": "" },
+      "enable": false,
+      "follower_count_str_desc": "",
+      "follower_count_str_desc_v2": "",
+      "status_code": 0,
+      "status_msg": ""
+    }
+  }
+}
