@@ -7,7 +7,15 @@ export type {
   BatchMessageReadResult,
   LoginOptions,
   LoginMethod,
+  LoginPolicy,
 } from './account.js';
+export type {
+  CookieProtoOptions,
+  ImCookieTransport,
+  ImProtoTransportClient,
+  ImTransportContext,
+  ImTransportFactory,
+} from '../services/im/transport.js';
 export type { ChatHistory, ChatHistoryOptions, ChatMessage, ChatMessageIdentifier, ConversationReadReceipt } from './contacts/chat-contact.js';
 export { Client, createClient } from './client.js';
 export type {
@@ -37,7 +45,7 @@ export type {
   LoginVerificationSource,
   OpenLoginVerificationOptions,
 } from './auth/login-verification.js';
-export { SendMessageError } from './errors.js';
+export { SavedSessionRequiredError, SendMessageError } from './errors.js';
 export { DouyinResponseError } from '../http/response.js';
 export type { ResponseFailureKind } from '../http/response.js';
 export {

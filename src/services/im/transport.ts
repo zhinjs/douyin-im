@@ -27,6 +27,34 @@ export interface CookieProtoOptions {
   httpUserAgent: string;
 }
 
+/** The Desktop Cookie protobuf channel used by ImService; replaceable per account. */
+export interface ImCookieTransport {
+  sendCookieProto(
+    cmd: number,
+    inboxType: number,
+    endpoint: string,
+    body: Record<string, unknown>,
+    opts: CookieProtoOptions,
+  ): Promise<Record<string, unknown>>;
+}
+
+/** Identity an account binds before creating its IM transport. */
+export interface ImTransportContext {
+  deviceId: string;
+  platformUid: string;
+}
+
+/**
+ * Creates one account's Cookie protobuf transport.
+ *
+ * Adapters use it to add request policy, response limits or correlation
+ * without patching the shared ImProtoTransport prototype.
+ */
+export type ImTransportFactory = (
+  client: ImProtoTransportClient,
+  context: ImTransportContext,
+) => ImCookieTransport;
+
 /** Failure after request preparation, distinct from a local encoding/configuration error. */
 export class ImProtoTransportError extends Error {
   override readonly name = 'ImProtoTransportError';
@@ -37,7 +65,7 @@ export class ImProtoTransportError extends Error {
 }
 
 /** HTTP protobuf 通道（imapi.snssdk.com） */
-export class ImProtoTransport {
+export class ImProtoTransport implements ImCookieTransport {
   private readonly installId: string | undefined;
 
   constructor(private readonly client: ImProtoTransportClient) {

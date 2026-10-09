@@ -1,7 +1,7 @@
 import protobuf from 'protobufjs';
 import { desktopCookieProtoOptions } from './desktop.js';
 import { mapProtoMessage } from './mappers.js';
-import type { ImProtoTransport } from './transport.js';
+import type { ImCookieTransport } from './transport.js';
 import type {
   ImActionResponse,
   RecentStrangerMessagesOptions,
@@ -15,7 +15,7 @@ const LONG = protobuf.util.Long as unknown as { fromString(value: string): unkno
 /** Desktop cmd2047 sync, plus legacy descriptor-backed inbox commands awaiting migration. */
 export class ImStrangerApi {
   constructor(
-    private readonly transport: ImProtoTransport,
+    private readonly transport: ImCookieTransport,
     private readonly deviceId = '',
   ) {}
 

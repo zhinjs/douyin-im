@@ -3,7 +3,7 @@ import { desktopCookieProtoOptions } from './desktop.js';
 import { mapProtoConversationListItem } from './mappers.js';
 import { GroupJoinRequestStatus } from './types.js';
 import { signedMessageIndex } from './conversation-delete.js';
-import type { ImProtoTransport } from './transport.js';
+import type { ImCookieTransport } from './transport.js';
 import type {
   BatchMarkReadResponse,
   ConversationActionOptions,
@@ -161,7 +161,7 @@ function groupMemberData(value: Record<string, unknown> | undefined): GroupMembe
 /** Desktop Cookie 会话动作。底层 cmd、Long 编码和响应差异不泄漏到 SDK 对象。 */
 export class ImConversationActions {
   constructor(
-    private readonly transport: ImProtoTransport,
+    private readonly transport: ImCookieTransport,
     private readonly deviceId: string,
     private readonly resolveSelfUid: () => string = () => '',
   ) {}

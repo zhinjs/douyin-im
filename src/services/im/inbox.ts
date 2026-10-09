@@ -1,5 +1,5 @@
 import protobuf from 'protobufjs';
-import type { ImProtoTransport } from './transport.js';
+import type { ImCookieTransport } from './transport.js';
 import {
   dedupeThreads,
   mapProtoConversation,
@@ -36,7 +36,7 @@ function cursorString(value: unknown): string {
 /** 收件箱 / 历史消息查询 */
 export class ImInboxApi {
   constructor(
-    private readonly transport: ImProtoTransport,
+    private readonly transport: ImCookieTransport,
     private readonly platformUid = '',
     private readonly deviceId = '',
   ) {}

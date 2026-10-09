@@ -1,6 +1,6 @@
 import { ImInboxApi } from './inbox.js';
 import { ImSendApi } from './send.js';
-import { ImProtoTransport } from './transport.js';
+import { ImProtoTransport, type ImCookieTransport, type ImTransportFactory } from './transport.js';
 import { ImMediaUploader } from './upload.js';
 import type { ImageAsset } from './content.js';
 import type { VideoAsset } from './upload.js';
@@ -114,6 +114,8 @@ export interface ImServiceOptions {
   /** 通常由 ApiConnection 提供，仅供自定义 transport 覆盖。 */
   guid?: string;
   screenSize?: DesktopScreenSize;
+  /** Replaces the built-in Cookie protobuf transport for this service only. */
+  transport?: ImTransportFactory;
 }
 
 export interface EncryptedVideoUrl {
@@ -128,7 +130,7 @@ export interface EncryptedVideoUrl {
  * 协议细节见 content / token / transport / inbox / send / mappers。
  */
 export class ImService {
-  private readonly transport: ImProtoTransport;
+  private readonly transport: ImCookieTransport;
   private readonly inboxApi: ImInboxApi;
   private readonly sendApi: ImSendApi;
   private readonly uploader: ImMediaUploader;
@@ -156,7 +158,12 @@ export class ImService {
       width: 1728,
       height: 1117,
     };
-    this.transport = new ImProtoTransport(client);
+    this.transport = serviceOpts.transport
+      ? serviceOpts.transport(client, {
+        deviceId: this.configuredDeviceId,
+        platformUid: this.configuredPlatformUid,
+      })
+      : new ImProtoTransport(client);
     this.inboxApi = new ImInboxApi(
       this.transport,
       this.configuredPlatformUid,

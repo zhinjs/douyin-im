@@ -7,6 +7,7 @@ import { getLogger, type Logger } from '../../logger.js';
 const logger = getLogger('Runtime:Connection');
 import { inboundFromThread } from '../raw/inbound-message.js';
 import { ImWebSocketReceiver } from './adapters/frontier-websocket.js';
+import type { FrontierImWs } from '../../services/im/ws-client.js';
 
 export interface ReconnectingSignal {
   attempt: number;
@@ -70,6 +71,16 @@ export class ConnectionManager {
 
   get connected(): boolean {
     return this.receiver?.isConnected ?? false;
+  }
+
+  /**
+   * The Frontier connection instance currently owned by this manager.
+   *
+   * A reconnect replaces the instance; adapters compare identity to bind
+   * observations to one connection.
+   */
+  get frontierConnection(): FrontierImWs | undefined {
+    return this.receiver?.frontierWs;
   }
 
   start(): Promise<void> {

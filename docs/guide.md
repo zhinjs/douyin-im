@@ -97,6 +97,29 @@ URL 中的 token 只属于当前挑战，宿主只能在服务端通过有鉴权
 `account.uid` 对应已确认的规范平台身份，`account.imUid` 是 IM 身份；登录前可能不可用。
 手机号、Passport Cookie 别名、`secUid`、IM UID 不是可任意互换的标识。所有协议大整数 ID 使用字符串。
 
+## 宿主适配扩展点
+
+长期运行的宿主（例如只允许固定会话和已验证发送的适配器）可以在不修改 SDK 内部实现的前提下收紧行为：
+
+```ts
+const account = client.createAccount({
+  accountId: savedUid,
+  // 只恢复已保存会话；没有可恢复会话时以 SavedSessionRequiredError（code=saved_session_required）失败，
+  // 不进入二维码、短信或密码登录，凭据保持原样。默认 'interactive'。
+  loginPolicy: 'saved-session-only',
+  // 上线后不加载好友、群和陌生人列表；默认 true。
+  loadContactsOnLogin: false,
+  // 替换此账号的 Cookie protobuf transport，用于请求策略、响应大小限制或发送回执关联。
+  imTransport: (client, { deviceId, platformUid }) => new MyTransport(client, deviceId, platformUid),
+});
+```
+
+`imTransport` 只作用于这个账号，不修改共享的 `ImProtoTransport` 原型。自定义 transport 可以复用
+`douyin-im/protocol` 导出的 `encodeRequest`、`decodeRequestRaw`、`decodeResponseRaw`、
+`desktopCookieProtoOptions` 与 `desktopBodyDigest`，或包装一个 `ImProtoTransport`。
+`account.frontierConnection` 返回当前 Frontier 长连接实例（未连接时为 `undefined`），重连会换成新实例；
+宿主可以监听它的 `protobuf` 事件并用导出的 `pushFromResponse` 解码，按实例身份把观察绑定到同一条连接。
+
 ## 联系人与缓存
 
 | 对象 | 网络查询/刷新 | 同步选择与缓存 |

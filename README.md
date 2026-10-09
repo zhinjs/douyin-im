@@ -456,6 +456,9 @@ Desktop 删除命令会软删除已缓存目标，通过 `notice.message.delete`
 - [文档索引](docs/README.md)：术语与设计决策。
 
 业务代码使用 `douyin-im`；扩展基类使用 `douyin-im/base`；协议研究使用 `douyin-im/protocol`。
+长期运行的宿主适配器可用 `loginPolicy: 'saved-session-only'`、`loadContactsOnLogin: false`、
+每账号的 `imTransport` 工厂和 `account.frontierConnection` 收紧登录、联系人加载、请求策略与入站观察，
+无需修改共享原型或导入内部文件；见 [使用指南](docs/guide.md#宿主适配扩展点)。
 内部 `ChatContact` 类不从根入口导出；根入口的同名导出是联系人联合类型。
 
 ## 开发验证

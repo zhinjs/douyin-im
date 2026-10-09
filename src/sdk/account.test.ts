@@ -4,7 +4,8 @@ import { dirname, join } from 'path';
 import { createImStateStore } from '../services/im/state-store.js';
 import { ApiConnection } from '../desktop/api-connection.js';
 import { AccountStore } from '../store/account-store.js';
-import { Account } from './account.js';
+import { Account, type AccountOptions } from './account.js';
+import { SavedSessionRequiredError } from './errors.js';
 import { ConnectionManager } from '../base/runtime/connection-manager.js';
 import { ImInboxQueries } from './messaging/inbox-queries.js';
 import { ImService } from '../services/im/service.js';
@@ -58,7 +59,8 @@ describe('Account lifecycle', () => {
     expect(unexpectedRequests).toEqual([]);
   });
 
-  function createQrAccount(localState?: false | { backend: 'json' | 'sqlite' }, transport = new ApiConnection()): Account {
+  function createQrAccount(localState?: false | { backend: 'json' | 'sqlite' }, transport = new ApiConnection(),
+    extra: AccountOptions = {}): Account {
     transport.jar.set('sessionid', 'session-id');
     jest.spyOn(transport, 'getSelfProfile').mockResolvedValue({ user: {} });
     jest.spyOn(transport, 'ttwidCheck').mockRejectedValue(new Error('optional warm-up failed'));
@@ -78,9 +80,96 @@ describe('Account lifecycle', () => {
     return Account.create(
       transport,
       new AccountStore({ dataDir }),
-      { skipVerify: true, ...(localState !== undefined ? { localState } : {}) },
+      { skipVerify: true, ...(localState !== undefined ? { localState } : {}), ...extra },
     );
   }
+
+  async function loginWithQr(account: Account): Promise<void> {
+    const ready = new Promise<void>(resolve => account.once('system.login.qrcode', resolve));
+    const online = new Promise<void>(resolve => account.once('system.online', resolve));
+    const login = account.login(); await ready;
+    const continuation = account.continueLogin(); await online;
+    await continuation; await login;
+  }
+
+  describe('adapter options', () => {
+    it('saved-session-only fails with a typed error when no Session is saved and never prompts', async () => {
+      const transport = new ApiConnection();
+      const qr = jest.spyOn(transport, 'getQrcode');
+      const account = Account.create(transport, new AccountStore({ dataDir }),
+        { skipVerify: true, localState: false, loginPolicy: 'saved-session-only' });
+      const prompts: string[] = [];
+      account.on('system.login.qrcode', () => prompts.push('qrcode'));
+      account.on('system.login.sms', () => prompts.push('sms'));
+      account.on('system.login.verification', () => prompts.push('verification'));
+      const error = await account.login().then(() => undefined, (reason: unknown) => reason);
+      expect(error).toBeInstanceOf(SavedSessionRequiredError);
+      expect((error as SavedSessionRequiredError).code).toBe('saved_session_required');
+      expect(qr).not.toHaveBeenCalled();
+      expect(prompts).toEqual([]);
+      expect(account.online).toBe(false);
+      expect(ConnectionManager.prototype.start).not.toHaveBeenCalled();
+    });
+
+    it('saved-session-only keeps an expired Session and does not fall back to QR login', async () => {
+      const store = new AccountStore({ dataDir });
+      store.save({ platformUid: '10001', session: { cookies: 'sessionid=expired' },
+        deviceProfile: AccountStore.buildDeviceProfile('test-agent', 'test-trace'), meta: { createdAt: '', updatedAt: '' } });
+      jest.spyOn(ApiConnection.prototype, 'probeSession').mockResolvedValue({ status: 'expired', reason: 'session expired' });
+      const qr = jest.spyOn(ApiConnection.prototype, 'getQrcode');
+      const account = Account.create(new ApiConnection(), store,
+        { accountId: '10001', localState: false, loginPolicy: 'saved-session-only' });
+      await expect(account.login()).rejects.toBeInstanceOf(SavedSessionRequiredError);
+      expect(qr).not.toHaveBeenCalled();
+      expect(account.online).toBe(false);
+      expect(ConnectionManager.prototype.start).not.toHaveBeenCalled();
+    });
+
+    it('saved-session-only restores a live saved Session and goes online without prompting', async () => {
+      const store = new AccountStore({ dataDir });
+      store.save({ platformUid: '10001', session: { cookies: 'sessionid=live' },
+        deviceProfile: AccountStore.buildDeviceProfile('test-agent', 'test-trace'), meta: { createdAt: '', updatedAt: '' } });
+      jest.spyOn(ApiConnection.prototype, 'probeSession').mockResolvedValue({ status: 'alive', uid: '10001', reason: 'ok' });
+      jest.spyOn(ApiConnection.prototype, 'getSelfProfile').mockResolvedValue({ user: {} });
+      const qr = jest.spyOn(ApiConnection.prototype, 'getQrcode');
+      const account = Account.create(new ApiConnection(), store,
+        { accountId: '10001', localState: false, loginPolicy: 'saved-session-only' });
+      await account.login();
+      expect(account.online).toBe(true);
+      expect(account.uid).toBe('10001');
+      expect(qr).not.toHaveBeenCalled();
+      await account.logout();
+    });
+
+    it('the default interactive policy still starts QR login', async () => {
+      const account = createQrAccount(false);
+      await loginWithQr(account);
+      expect(account.online).toBe(true);
+      await account.logout();
+    });
+
+    it.each([true, false])('loads startup contacts only when loadContactsOnLogin is %s', async enabled => {
+      const account = createQrAccount(false, new ApiConnection(), enabled ? {} : { loadContactsOnLogin: false });
+      await loginWithQr(account);
+      expect(account.online).toBe(true);
+      expect(loadContacts).toHaveBeenCalledTimes(enabled ? 1 : 0);
+      await account.logout();
+    });
+
+    it('builds the account IM service with the supplied transport and its bound identity', async () => {
+      const custom = { sendCookieProto: jest.fn() };
+      const factory = jest.fn(() => custom);
+      const account = createQrAccount(false, new ApiConnection(), { imTransport: factory });
+      expect(account.frontierConnection).toBeUndefined();
+      await loginWithQr(account);
+      expect(factory).toHaveBeenCalledTimes(1);
+      const [, context] = factory.mock.calls[0] as unknown as [unknown, { deviceId: string; platformUid: string }];
+      expect(context.platformUid).toBe('10001');
+      expect(context.deviceId).toMatch(/^\d+$/);
+      expect((account.im as unknown as { transport: unknown }).transport).toBe(custom);
+      await account.logout();
+    });
+  });
 
   it.each(['success', 'partial failure', 'logout'] as const)('loads contacts after login with independent results: %s', async outcome => {
     loadContacts.mockRestore();

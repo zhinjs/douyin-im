@@ -16,6 +16,19 @@ export class SendMessageError extends Error {
   }
 }
 
+/**
+ * 账号设置了 `loginPolicy: 'saved-session-only'`，但没有可恢复的已保存会话。
+ * SDK 不会转入二维码、短信或密码登录；凭据保持原样。
+ */
+export class SavedSessionRequiredError extends Error {
+  readonly code = 'saved_session_required';
+
+  constructor() {
+    super('需要可恢复的已保存会话；当前登录策略不允许交互式登录');
+    this.name = 'SavedSessionRequiredError';
+  }
+}
+
 export function toError(value: unknown): Error {
   return value instanceof Error ? value : new Error(String(value));
 }

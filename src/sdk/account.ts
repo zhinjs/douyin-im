@@ -58,7 +58,8 @@ import type {
   GroupMemberData,
   ImActionResponse,
 } from '../services/im/types.js';
-import { toError } from './errors.js';
+import { SavedSessionRequiredError, toError } from './errors.js';
+import type { ImTransportFactory } from '../services/im/transport.js';
 import { BaseAccount } from '../base/account.js';
 import { emitEventRoutes } from './events/router.js';
 import {
@@ -101,7 +102,18 @@ export interface AccountOptions {
   skipVerify?: boolean;
   /** 本地 IM 状态库；默认 sqlite，false 可完全关闭。 */
   localState?: false | LocalImStateOptions;
+  /**
+   * `saved-session-only`：只恢复已保存会话；没有可恢复会话时以
+   * SavedSessionRequiredError 失败，不进入二维码、短信或密码登录。默认 `interactive`。
+   */
+  loginPolicy?: LoginPolicy;
+  /** 上线后是否加载好友、群和陌生人列表；默认 true。 */
+  loadContactsOnLogin?: boolean;
+  /** 替换此账号的 Cookie protobuf transport（请求策略、响应限制或关联等）。 */
+  imTransport?: ImTransportFactory;
 }
+
+export type LoginPolicy = 'interactive' | 'saved-session-only';
 
 export type ChatContact = Friend | Group | Stranger;
 
@@ -125,6 +137,9 @@ export class Account extends BaseAccount {
   private readonly skipVerify: boolean;
   private readonly preferredUid?: string;
   private readonly localStateOptions: false | LocalImStateOptions;
+  private readonly loginPolicy: LoginPolicy;
+  private readonly loadContactsOnLogin: boolean;
+  private readonly imTransport: ImTransportFactory | undefined;
   private onlinePayload?: { platformUid: string; screenName?: string };
   private accountNickname: string | undefined;
   private accountProfile?: Readonly<ImUserProfile>;
@@ -166,6 +181,9 @@ export class Account extends BaseAccount {
     this.store = store;
     this.skipVerify = options.skipVerify ?? false;
     this.localStateOptions = options.localState ?? {};
+    this.loginPolicy = options.loginPolicy ?? 'interactive';
+    this.loadContactsOnLogin = options.loadContactsOnLogin ?? true;
+    this.imTransport = options.imTransport;
 
     const preferredUid = options.accountId
       ? store.resolvePlatformUid(options.accountId)
@@ -863,6 +881,7 @@ export class Account extends BaseAccount {
     }
 
     this.assertLoginGeneration(generation);
+    if (this.loginPolicy === 'saved-session-only') throw new SavedSessionRequiredError();
     await this.auth.beginLogin();
   }
 
@@ -1287,6 +1306,7 @@ export class Account extends BaseAccount {
     const sender = new OutboundSender(bound.client, {
       platformUid: bound.platformUid,
       deviceId: bound.deviceId,
+      ...(this.imTransport ? { imTransport: this.imTransport } : {}),
       getStickerEnabledStatus: () => this.collectedEmojiState?.stickerEnabledStatus,
       getConversationSettingExt: (id) => this.cachedConversation(id)?.settingExt,
       onMessage: (message) => {
@@ -1401,7 +1421,7 @@ export class Account extends BaseAccount {
     this.completeLogin();
     this.startSessionRenewal((scene, signal) => this.auth.refreshSession(scene, signal));
     this.emit('system.online', payload);
-    await this.loadOnlineContacts(generation);
+    if (this.loadContactsOnLogin) await this.loadOnlineContacts(generation);
   }
 
   /** 每次登录上线后加载一次；WS 重连沿用当前联系人缓存。 */

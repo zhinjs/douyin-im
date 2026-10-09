@@ -51,6 +51,22 @@ function recoveryHarness() {
 }
 
 describe('ConnectionManager lifecycle', () => {
+  it('exposes the owned Frontier connection instance until stop detaches it', async () => {
+    const frontier = { connected: true };
+    const receiver = {
+      isConnected: true,
+      frontierWs: frontier,
+      start: jest.fn().mockResolvedValue(undefined),
+      stop: jest.fn().mockResolvedValue(undefined),
+    } as unknown as ImWebSocketReceiver;
+    const manager = new ConnectionManager(options(), factory(receiver));
+    expect(manager.frontierConnection).toBeUndefined();
+    await manager.start();
+    expect(manager.frontierConnection).toBe(frontier);
+    await manager.stop();
+    expect(manager.frontierConnection).toBeUndefined();
+  });
+
   it('reuses one start task and stops the owned receiver once', async () => {
     const receiver = {
       isConnected: true,

@@ -4,6 +4,7 @@ import {
   type ConnectionManagerOptions,
 } from './runtime/connection-manager.js';
 import { AccountRuntime } from './runtime/account-runtime.js';
+import type { FrontierImWs } from '../services/im/ws-client.js';
 import type { AccountStore } from '../store/account-store.js';
 import type { ApiConnection } from '../desktop/api-connection.js';
 import { PassportTokenBeat } from '../desktop/token-beat.js';
@@ -62,6 +63,14 @@ export abstract class BaseAccount extends EventEmitter {
 
   get online(): boolean {
     return this.accountState === 'online' || this.accountState === 'reconnecting';
+  }
+
+  /**
+   * 当前 Frontier 长连接实例；未连接时为 undefined。重连会换成新实例，
+   * 适配器可按实例身份把观察绑定到同一条连接。
+   */
+  get frontierConnection(): FrontierImWs | undefined {
+    return this.connectionManager?.frontierConnection;
   }
 
   /** 报告真实使用活动；空闲时暂停 Session 续期，收消息不自动视为用户活动。 */

@@ -1,6 +1,6 @@
 import protobuf from 'protobufjs';
 import { desktopCookieProtoOptions } from './desktop.js';
-import type { ImProtoTransport } from './transport.js';
+import type { ImCookieTransport } from './transport.js';
 import type { ConversationAddressOptions, GroupMemberData, ImActionResponse, PrivateMessage } from './types.js';
 
 /** Raw native aggregate, BEFORE renderer privacy filtering; not a complete live reader census. */
@@ -191,7 +191,7 @@ function envelope(decoded: Record<string, unknown>): ImActionResponse {
 
 /** Native GroupMemberNetwork 的查询合同；本项目保持 HTTP-only，不模拟 native 的 WS-first 调度。 */
 export class ImReadStateApi {
-  constructor(private readonly transport: ImProtoTransport, private readonly deviceId: string) {}
+  constructor(private readonly transport: ImCookieTransport, private readonly deviceId: string) {}
 
   getReadIndexes(options: ConversationAddressOptions): Promise<ReadCursorsResponse> {
     return this.query(options, 2000, 'participantsReadIndexBody', '/v3/conversation/get_read_index');

@@ -15,6 +15,7 @@ import type {
   PrivateMessage,
 } from '../../services/im/types.js';
 import type { ApiConnection } from '../../desktop/api-connection.js';
+import type { ImTransportFactory } from '../../services/im/transport.js';
 import { isImageAsset, isTextMessage, prepareTextMessage, type SendableMessage } from './message.js';
 import { resolveImageSource } from './media-source.js';
 import { buildCardMessage } from '../../services/im/cards.js';
@@ -31,6 +32,8 @@ export interface OutboundOptions {
   getStickerEnabledStatus?: () => CollectedStickerEnabledStatus | undefined;
   /** Account-local settingInfo.ext snapshot; reading this must not create or fetch a conversation. */
   getConversationSettingExt?: (conversationId: string) => Readonly<Record<string, string>> | undefined;
+  /** Account-supplied replacement for the Cookie protobuf transport. */
+  imTransport?: ImTransportFactory;
 }
 
 const DESKTOP_FORWARDABLE_MESSAGE_TYPES = new Set([
@@ -68,6 +71,7 @@ export class OutboundSender {
     this.im = new ImService(client, {
       ...(opts.platformUid ? { platformUid: opts.platformUid } : {}),
       ...(opts.deviceId ? { deviceId: opts.deviceId } : {}),
+      ...(opts.imTransport ? { transport: opts.imTransport } : {}),
     });
   }
 

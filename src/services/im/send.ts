@@ -4,7 +4,7 @@ import {
   normalizeDesktopTextMessageContent,
   parseSendMessageResponse,
 } from './content.js';
-import type { ImProtoTransport } from './transport.js';
+import type { ImCookieTransport } from './transport.js';
 import { desktopCookieProtoOptions } from './desktop.js';
 import type {
   RecallMessageOptions,
@@ -34,7 +34,7 @@ function encodeReference(
 /** 抖音聊天消息发送与撤回协议。 */
 export class ImSendApi {
   constructor(
-    private readonly transport: ImProtoTransport,
+    private readonly transport: ImCookieTransport,
     private readonly deviceId = '',
   ) {}
 
