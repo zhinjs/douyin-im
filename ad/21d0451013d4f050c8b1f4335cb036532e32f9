@@ -1,0 +1,41 @@
+.changeset/remote-verification-url.md
+  s_1f93069522e7c2::t_ee97c012015e16 1-5
+src/sdk/auth/browser-verification.ts
+  s_1f93069522e7c2::t_a46398332ea18b 43-44,115-116
+  s_1f93069522e7c2::t_ee97c012015e16 117-119
+src/sdk/auth/login-verification.ts
+  s_1f93069522e7c2::t_a46398332ea18b 52-53,78-80,101-113,116-124,127,132-135
+src/sdk/auth/action-verification.test.ts
+  s_1f93069522e7c2::t_ee97c012015e16 34,37
+  s_1f93069522e7c2::t_88b876cbfe05e4 39-43
+src/sdk/auth/account-auth.ts
+  s_1f93069522e7c2::t_a46398332ea18b 703-704
+src/sdk/account.ts
+  s_1f93069522e7c2::t_a46398332ea18b 1520-1521
+src/sdk/auth/action-verification.ts
+  s_1f93069522e7c2::t_a46398332ea18b 14-18,31-33,57-69,72-79,83-86
+README.md
+  s_1f93069522e7c2::t_ee97c012015e16 111-115
+src/sdk/auth/browser-verification.test.ts
+  s_1f93069522e7c2::t_2d9edac8860a2c 27
+  s_1f93069522e7c2::t_2263cf1fc07065 14-16,18-26,28-36,38-44
+  s_1f93069522e7c2::t_5cf98d8cba2434 17,37
+docs/guide.md
+  s_1f93069522e7c2::t_ee97c012015e16 78-82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ad21d0451013d4f050c8b1f4335cb036532e32f9",
+  "prompts": {},
+  "sessions": {
+    "s_1f93069522e7c2": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b402-761c-7fa2-9434-bdd2f1897601",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Class Liu <chunlang.liu@rdc-west.com>"
+    }
+  }
+}
